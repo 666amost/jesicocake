@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Playfair_Display, Montserrat, Inter } from 'next/font/google';
+import { Playfair_Display, Cormorant_Garamond, Montserrat, Inter } from 'next/font/google';
 import { CartProvider } from '@/lib/CartContext';
 import { Toaster } from '@/components/ui/toaster';
 import BottomNavbar from '@/components/BottomNavbar';
@@ -12,6 +12,12 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
 const montserrat = Montserrat({ 
   subsets: ['latin'],
   variable: '--font-montserrat',
@@ -21,13 +27,11 @@ const montserrat = Montserrat({
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Jesico - Sweet Treats',
-  description: 'Delicious cakes and pastries for all occasions',
+  title: 'Jesico Cake - More Bite More You Like',
+  description: 'Premium cakes and pastries for your special moments',
   icons: {
-    icon: [
-      { url: '/icon.png' },
-      { url: '/favicon.ico' },
-    ],
+    icon: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 
@@ -37,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${playfair.variable} ${montserrat.variable} font-sans bg-neutral-50`}>
+    <html lang="en" className={`${playfair.variable} ${cormorant.variable} ${montserrat.variable} font-sans bg-neutral-50`}>
+      <body>
         <CartProvider>
           <main>
             {children}
