@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,15 +10,14 @@ import { Product } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProductFormPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default function ProductFormPage({ params }: ProductFormPageProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const isNew = params.id === 'new';
+  const { id } = use(params);
+  const isNew = id === 'new';
   
   const [isLoading, setIsLoading] = useState(!isNew);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,14 +38,14 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
     if (!isNew) {
       fetchProduct();
     }
-  }, [isNew, params.id]);
+  }, [isNew, id]);
   
   const fetchProduct = async () => {
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single();
       
       if (error) throw error;
@@ -160,7 +159,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         const { error } = await supabase
           .from('products')
           .update(productData)
-          .eq('id', params.id);
+          .eq('id', id);
         
         if (error) throw error;
         
