@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { use } from 'react';
 import supabase from '@/lib/supabase';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,10 +8,13 @@ import ProductToppings from '@/components/ProductToppings';
 import AddToCartForm from '@/components/AddToCartForm';
 import { formatCurrency } from '@/lib/utils';
 
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
+export async function generateStaticParams() {
+  return [];
+}
+
+type Props = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 async function getProduct(id: string) {
@@ -41,9 +45,8 @@ async function getToppings() {
   return data || [];
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const id = params.id;
-  const product = await getProduct(id);
+export default async function ProductPage({ params }: Props) {
+  const product = await getProduct(params.id);
   
   if (!product) {
     notFound();
@@ -54,7 +57,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 md:px-6 py-8">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -68,7 +70,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   priority
                 />
               </div>
-              
               <div className="p-6 md:p-8 md:w-1/2">
                 <div className="uppercase tracking-wide text-sm text-orange-500 font-semibold">
                   {product.category}
@@ -76,18 +77,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <h1 className="mt-2 text-3xl leading-tight font-bold text-gray-900">
                   {product.name}
                 </h1>
-                
                 <p className="mt-4 text-lg text-gray-600">{product.description}</p>
-                
                 <p className="mt-4 text-2xl font-bold text-orange-600">
                   {formatCurrency(product.price)}
                 </p>
-                
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-3">Available Toppings</h3>
                   <ProductToppings toppings={toppings} />
                 </div>
-                
                 <div className="mt-8">
                   <AddToCartForm 
                     product={product} 
@@ -98,11 +95,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
           </div>
-          
           {/* Related Products Section - Can be implemented in a future enhancement */}
         </div>
       </main>
-      
       <Footer />
     </div>
   );

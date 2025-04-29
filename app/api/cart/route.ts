@@ -9,18 +9,23 @@ import {
 } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
+import supabase from '@/lib/supabase';
 
-// Helper to get or create session ID
+interface CartItem {
+  product_id: string;
+  quantity: number;
+  selected_toppings: string[];
+}
+
+// Helper function to get or create session ID
 async function getSessionId() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   let sessionId = cookieStore.get('session_id')?.value;
-  
+
   if (!sessionId) {
     sessionId = uuidv4();
-    // Note: This won't actually set the cookie in an API route
-    // We'll handle setting the cookie in the front-end
   }
-  
+
   return sessionId;
 }
 

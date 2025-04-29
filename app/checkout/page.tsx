@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import { formatCurrency, getMinDeliveryDate, getMaxDeliveryDate } from '@/lib/utils';
@@ -11,506 +11,288 @@ import supabase from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { UserCircle2, UserPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
-// Define interface for order data
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+}
+
+interface Topping {
+  id: string;
+  name: string;
+  price: number;
+}
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+  selectedTopping?: Topping;
+}
+
+type Cart = CartItem[];
+
 interface OrderData {
   customer_name: string;
   customer_phone: string;
-  customer_address: string;
+  delivery_address: string;
   delivery_date: string;
+  delivery_time: string;
+  notes: string;
   total_amount: number;
-  notes: string | null;
-  user_id?: string; // Optional property for user_id
+  payment_method: string;
+  payment_status: string;
+  status: string;
+  is_delivery: boolean;
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, clearCart } = useCart();
   const { toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
   
-  const isLogin = searchParams.get('login') === 'true';
-  const isRegister = searchParams.get('register') === 'true';
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderSuccess, setOrderSuccess] = useState(false);
-  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    deliveryDate: getMinDeliveryDate(),
-    notes: ''
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDelivery, setIsDelivery] = useState(true);
+  const total = searchParams.get('total') || '0';
+  const totalAmount = parseFloat(total);
+  const [formData, setFormData] = useState<OrderData>({
+    customer_name: '',
+    customer_phone: '',
+    delivery_address: '',
+    delivery_date: '',
+    delivery_time: '',
+    notes: '',
+    total_amount: totalAmount,
+    payment_method: 'cash',
+    payment_status: 'pending',
+    status: 'pending',
+    is_delivery: true,
   });
-  const [checkoutType, setCheckoutType] = useState<'guest' | 'register' | 'login'>(
-    isLogin ? 'login' : isRegister ? 'register' : 'guest'
-  );
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isRedirecting, setIsRedirecting] = useState(false);
   
   useEffect(() => {
-    if (isRedirecting) return;
-    const justOrdered = typeof window !== 'undefined' && sessionStorage.getItem('justOrdered') === 'true';
-    if (cartItems.length === 0 && !isLogin && !isRegister && !justOrdered) {
-      router.push('/cart');
+    const total = searchParams.get('total');
+    if (total) {
+      setFormData(prev => ({
+        ...prev,
+        total_amount: parseFloat(total) || 0
+      }));
     }
-  }, [cartItems.length, router, isLogin, isRegister, isRedirecting]);
-  
-  const minDate = getMinDeliveryDate();
-  const maxDate = getMaxDeliveryDate();
-  
-  // Effect untuk melakukan redirect setelah pesanan berhasil
-  useEffect(() => {
-    if (orderSuccess && successOrderId) {
-      setIsRedirecting(true);
-      // Jangan hapus flag di sini, hanya set sebelum clearCart
-      const redirectTimer = setTimeout(() => {
-        router.push(`/checkout/success?id=${successOrderId}`);
-      }, 500);
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [orderSuccess, successOrderId, router]);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, [searchParams]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For authentication-only actions, don't require cart items
-    const isAuthOnly = (checkoutType === 'login' || checkoutType === 'register') && cartItems.length === 0;
-    
-    if (cartItems.length === 0 && !isAuthOnly) {
+    if (!cartItems || cartItems.length === 0) {
       toast({
-        title: "Empty Cart",
-        description: "Your cart is empty. Please add items before checking out.",
-        variant: "destructive"
+        title: "Error",
+        description: "Your cart is empty",
+        variant: "destructive",
       });
       return;
     }
-    
-    setIsSubmitting(true);
-    
+
     try {
-      // If user selected to register, create account first
-      if (checkoutType === 'register' && email && password) {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name: formData.name,
-              phone: formData.phone,
-              address: formData.address
-            }
-          }
-        });
-        
-        if (authError) {
-          throw new Error(authError.message || 'Failed to create account');
-        }
-        
-        toast({
-          title: "Account Created",
-          description: "Your account has been created successfully. Please check your email for verification."
-        });
-        
-        // If auth-only (no cart items), redirect to account page
-        if (isAuthOnly) {
-          router.push('/account');
-          return;
-        }
-      }
-      
-      // If user selected to login, authenticate them
-      if (checkoutType === 'login' && email && password) {
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        
-        if (authError) {
-          throw new Error(authError.message || 'Failed to login');
-        }
-        
-        // Get user profile data to update form
-        const { data: userData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authData.user?.id)
-          .single();
-          
-        if (userData) {
-          setFormData(prev => ({
-            ...prev,
-            name: userData.name || prev.name,
-            phone: userData.phone || prev.phone,
-            address: userData.address || prev.address
-          }));
-        }
-        
-        toast({
-          title: "Login Successful",
-          description: "You have been successfully logged in."
-        });
-        
-        // If auth-only (no cart items), redirect to account page
-        if (isAuthOnly) {
-          router.push('/account');
-          return;
-        }
-      }
-      
-      // Skip order creation if this is auth-only
-      if (isAuthOnly) {
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // Create order
-      const orderData: OrderData = {
-        customer_name: formData.name,
-        customer_phone: formData.phone,
-        customer_address: formData.address,
-        delivery_date: formData.deliveryDate,
-        total_amount: cartTotal,
-        notes: formData.notes || null,
-      };
-      
-      // Hanya tambahkan user_id jika pengguna login/register
-      if (checkoutType === 'login' || checkoutType === 'register') {
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData?.user?.id) {
-          // Periksa apakah kolom user_id ada di tabel orders
-          const { data: columnsData, error: columnsError } = await supabase
-            .rpc('check_column_exists', { table_name: 'orders', column_name: 'user_id' });
-          
-          if (!columnsError && columnsData) {
-            // Jika kolom ada, tambahkan ke orderData
-            orderData.user_id = userData.user.id;
-          }
-        }
-      }
-      
-      const { data: order, error: orderError } = await supabase
+      const orderItems = cartItems.map((item: CartItem) => ({
+        product_id: item.product.id,
+        topping_id: item.selectedTopping?.id || null,
+        quantity: item.quantity,
+        unit_price: item.product.price + (item.selectedTopping?.price || 0)
+      }));
+
+      // Insert order into database
+      const { data: orderData, error: orderError } = await supabase
         .from('orders')
-        .insert(orderData)
+        .insert([formData])
         .select()
         .single();
       
-      if (orderError) {
-        if (orderError.message.includes('row-level security policy')) {
-          console.error('Row-level security error:', orderError.message);
-          toast({
-            title: "Database Permission Error",
-            description: "The system cannot create orders due to security settings. Please contact the administrator to enable RLS policy for orders table.",
-            variant: "destructive"
-          });
-        } else {
-          throw new Error(orderError.message || 'Failed to create order');
-        }
-        return;
-      }
+      if (orderError) throw orderError;
       
-      if (!order) {
-        throw new Error('Failed to create order - no order data returned');
-      }
-      
-      // Create order items
-      const orderItems = cartItems.map(item => ({
-        order_id: order.id,
-        product_id: item.product_id,
-        topping_id: item.topping_id,
-        quantity: item.quantity,
-        unit_price: item.product?.price || 0,
-        topping_price: item.topping?.price || 0
-      }));
-      
+      // Insert order items
       const { error: itemsError } = await supabase
         .from('order_items')
         .insert(orderItems);
       
-      if (itemsError) {
-        throw new Error(itemsError.message || 'Failed to create order items');
-      }
+      if (itemsError) throw itemsError;
       
-      // Save order data to localStorage for the WhatsApp notification
-      const orderWithItems = {
-        ...order,
-        items: cartItems.map(item => ({
-          name: item.product?.name,
-          price: item.product?.price,
-          quantity: item.quantity,
-          toppings: item.topping?.name
-        }))
-      };
-      localStorage.setItem('lastOrder', JSON.stringify(orderWithItems));
-      // Set flag justOrdered SEBELUM clearCart
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('justOrdered', 'true');
-      }
-      // Clear cart
-      await clearCart();
+      // Clear cart after successful order
+      clearCart();
       
-      // Set success state dan order ID untuk triggering redirect
-      setSuccessOrderId(order.id);
-      setOrderSuccess(true);
-      
-      // Tidak langsung redirect di sini, biarkan useEffect yang menangani
-    } catch (error) {
-      console.error('Checkout error:', error);
+      // Show success message
       toast({
-        title: "Checkout Failed",
-        description: "There was an error processing your order. Please try again.",
+        title: "Order Placed Successfully",
+        description: `Your order ID is: ${orderData.id}`,
+      });
+      
+      // Redirect to success page
+      router.push(`/checkout/success?id=${orderData.id}`);
+    } catch (error: any) {
+      console.error('Error submitting order:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit order",
         variant: "destructive"
       });
-      setIsSubmitting(false);
     }
   };
   
-  // Show login/register form even with empty cart if those parameters are set
-  const showAuthForm = isLogin || isRegister || cartItems.length > 0;
-  
-  // Jika sedang redirect, tampilkan spinner saja
-  if (isRedirecting) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow pt-20 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Mengalihkan ke halaman pembayaran...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
-  if (!showAuthForm) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow pt-20 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Redirecting to your cart...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-grow pt-20">
-        <div className="container mx-auto px-4 md:px-6 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-            {cartItems.length === 0 ? (isLogin ? 'Login' : 'Register') : 'Checkout'}
-          </h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8">
+        <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
+          <h1 className="text-2xl font-bold mb-6">Checkout</h1>
           
-          {cartItems.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-medium mb-4">Checkout Options</h2>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  type="button"
-                  onClick={() => setCheckoutType('guest')}
-                  className={`flex-1 p-4 rounded-lg border-2 ${
-                    checkoutType === 'guest' 
-                      ? 'border-orange-500 bg-orange-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  } flex items-center justify-center gap-2`}
-                >
-                  <UserCircle2 className="h-5 w-5" />
-                  <span>Guest Checkout</span>
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => setCheckoutType('register')}
-                  className={`flex-1 p-4 rounded-lg border-2 ${
-                    checkoutType === 'register' 
-                      ? 'border-orange-500 bg-orange-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  } flex items-center justify-center gap-2`}
-                >
-                  <UserPlus className="h-5 w-5" />
-                  <span>Register & Checkout</span>
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => setCheckoutType('login')}
-                  className={`flex-1 p-4 rounded-lg border-2 ${
-                    checkoutType === 'login' 
-                      ? 'border-orange-500 bg-orange-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  } flex items-center justify-center gap-2`}
-                >
-                  <UserCircle2 className="h-5 w-5" />
-                  <span>Login & Checkout</span>
-                </button>
+          <form onSubmit={handleSubmit} ref={formRef} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="customer_name">Name</Label>
+                <Input
+                  id="customer_name"
+                  name="customer_name"
+                  value={formData.customer_name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="customer_phone">Phone Number</Label>
+                <Input
+                  id="customer_phone"
+                  name="customer_phone"
+                  value={formData.customer_phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_delivery"
+                  name="is_delivery"
+                  checked={isDelivery}
+                  onCheckedChange={(checked) => {
+                    setIsDelivery(checked);
+                    setFormData(prev => ({ ...prev, is_delivery: checked }));
+                  }}
+                />
+                <Label htmlFor="is_delivery">Delivery</Label>
+              </div>
+              
+              {isDelivery && (
+                <div>
+                  <Label htmlFor="delivery_address">Delivery Address</Label>
+                  <Textarea
+                    id="delivery_address"
+                    name="delivery_address"
+                    value={formData.delivery_address}
+                    onChange={handleChange}
+                    required={isDelivery}
+                  />
+                </div>
+              )}
+              
+              <div>
+                <Label htmlFor="delivery_date">Delivery/Pickup Date</Label>
+                <Input
+                  id="delivery_date"
+                  name="delivery_date"
+                  type="date"
+                  value={formData.delivery_date}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="delivery_time">Delivery/Pickup Time</Label>
+                <Input
+                  id="delivery_time"
+                  name="delivery_time"
+                  type="time"
+                  value={formData.delivery_time}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="notes">Notes (Optional)</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  placeholder="Any special requests or notes for your order"
+                />
+              </div>
+              
+              <div>
+                <Label>Total Amount</Label>
+                <p className="text-2xl font-bold text-orange-600">
+                  Rp {formData.total_amount.toLocaleString()}
+                </p>
               </div>
             </div>
-          )}
-          
-          <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-            <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="border-b border-gray-200 p-4 md:p-6">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {cartItems.length === 0 ? 
-                      (isLogin ? 'Login Information' : 'Registration Information') : 
-                      'Customer Information'}
-                  </h2>
-                </div>
-                
-                <div className="p-4 md:p-6 space-y-4">
-                  {(checkoutType === 'register' || checkoutType === 'login') && (
-                    <div className="space-y-4 pb-4 border-b border-dashed border-gray-200">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                          placeholder="your@email.com"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          id="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                          placeholder="••••••••"
-                        />
-                      </div>
-                    </div>
-                  )}
-                
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                      Delivery Address
-                    </label>
-                    <input
-                      type="text"
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                      placeholder="Enter your full address"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-700 mb-1">
-                      Delivery Date (2-7 days from today)
-                    </label>
-                    <input
-                      type="date"
-                      id="deliveryDate"
-                      name="deliveryDate"
-                      value={formData.deliveryDate}
-                      onChange={handleChange}
-                      min={minDate}
-                      max={maxDate}
-                      required
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Please select a date between {minDate} and {maxDate}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-                      Order Notes (Optional)
-                    </label>
-                    <textarea
-                      id="notes"
-                      name="notes"
-                      value={formData.notes}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
-                      placeholder="Special instructions for your order"
-                    ></textarea>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-200 p-4 md:p-6">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-orange-600 text-white py-3 px-4 rounded-md text-center font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Processing...' : 'Complete Order'}
-                  </button>
-                </div>
-              </form>
-            </div>
             
-            <div className="lg:col-span-1 mt-8 lg:mt-0">
-              <CheckoutSummary cartItems={cartItems} cartTotal={cartTotal} />
+            <div className="pt-4 space-y-4">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </div>
+                ) : (
+                  'Place Order'
+                )}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => router.push('/cart')}
+              >
+                Back to Cart
+              </Button>
             </div>
-          </div>
+          </form>
         </div>
-      </main>
-      
-      <Footer />
+      </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
