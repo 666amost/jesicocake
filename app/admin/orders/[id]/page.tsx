@@ -144,7 +144,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     // Pastikan data terbaru sebelum print
     await fetchOrderDetails();
     setTimeout(() => {
-      window.print();
+    window.print();
     }, 200); // beri jeda agar state update
   };
   
@@ -230,13 +230,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </button>
-          <button
-            onClick={handlePrint}
+        <button
+          onClick={handlePrint}
             className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
-          >
-            <Printer className="w-5 h-5 mr-2" />
-            Print Invoice
-          </button>
+        >
+          <Printer className="w-5 h-5 mr-2" />
+          Print Invoice
+        </button>
           
           <button
             onClick={sendWhatsAppNotification}
@@ -246,8 +246,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             Notifikasi Pelanggan
           </button>
         </div>
-      </div>
-      
+            </div>
+            
       <div className="print-invoice bg-white rounded-lg shadow-sm overflow-hidden p-8 mx-auto" style={{maxWidth: '800px'}}>
         {/* HEADER INVOICE */}
         <div className="flex justify-between items-center mb-8 border-b pb-4">
@@ -259,29 +259,29 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           <div className="text-right">
             <div className="text-gray-700 font-semibold">
               Status: 
-              <select 
-                value={order.status}
-                onChange={(e) => updateOrderStatus(e.target.value)}
+                <select
+                  value={order.status}
+                  onChange={(e) => updateOrderStatus(e.target.value)}
                 className="ml-2 p-1 border rounded no-print"
-              >
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                >
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               <span className="print-only capitalize">{order.status}</span>
-            </div>
+              </div>
             <div className="text-gray-700 font-semibold">
               Pembayaran: 
-              <select 
-                value={order.payment_status}
-                onChange={(e) => updatePaymentStatus(e.target.value)}
+                <select
+                  value={order.payment_status}
+                  onChange={(e) => updatePaymentStatus(e.target.value)}
                 className="ml-2 p-1 border rounded no-print"
-              >
-                <option value="unpaid">Unpaid</option>
-                <option value="paid">Paid</option>
+                >
+                  <option value="unpaid">Unpaid</option>
+                  <option value="paid">Paid</option>
                 <option value="refunded">Refunded</option>
-              </select>
+                </select>
               <span className="print-only capitalize">{order.payment_status}</span>
             </div>
           </div>
@@ -299,7 +299,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <div className="text-gray-800">{new Date(order.delivery_date).toLocaleDateString('id-ID')}</div>
             {order.notes && <div className="text-gray-800 mt-2">Catatan: {order.notes}</div>}
           </div>
-        </div>
+              </div>
         {/* ORDER ITEMS TABLE */}
         <table className="w-full mb-8 border-t border-b">
           <thead>

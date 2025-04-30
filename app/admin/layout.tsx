@@ -25,32 +25,32 @@ export default function AdminLayout({
 
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
 
-        if (!session) {
-          // Redirect to login if not authenticated
-          router.push('/admin/login');
-          return;
-        }
+      if (!session) {
+        // Redirect to login if not authenticated
+        router.push('/admin/login');
+        return;
+      }
 
-        // Check if user has admin role
-        const { data: userData, error } = await supabase
+      // Check if user has admin role
+      const { data: userData, error } = await supabase
           .from('profiles')
-          .select('role')
+        .select('role')
           .eq('id', session.user.id)
           .single();
 
-        // Check the role
-        if (error || !userData || userData.role !== 'admin') {
+      // Check the role
+      if (error || !userData || userData.role !== 'admin') {
           // Sign out if role is not 'admin'
-          await supabase.auth.signOut();
-          router.push('/admin/login');
-          return;
-        }
+        await supabase.auth.signOut();
+        router.push('/admin/login');
+        return;
+      }
 
-        // If everything is OK, set user data and stop loading
-        setUser(session.user);
-        setLoading(false);
+      // If everything is OK, set user data and stop loading
+      setUser(session.user);
+      setLoading(false);
       } catch (error) {
         console.error('Error checking authentication:', error);
         router.push('/admin/login');

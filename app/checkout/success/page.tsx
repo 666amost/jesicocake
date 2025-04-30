@@ -238,15 +238,15 @@ function SuccessContent() {
               />
               <p className="mt-3 text-xs text-gray-500 text-center">
                 Tunjukkan QR code ini saat pengambilan atau sebagai bukti pesanan
-              </p>
-            </div>
-            
+                </p>
+              </div>
+              
             {/* Action Buttons */}
             <div className="p-6 flex flex-col items-center space-y-4">
               <button
                 onClick={() => window.open(whatsappUrl, '_blank')}
                 className="w-full max-w-md px-6 py-3 bg-orange-600 text-white rounded-md font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center"
-              >
+                >
                 <Phone className="w-5 h-5 mr-2" />
                 OK - Lanjutkan ke WhatsApp
               </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { Search, Eye, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import supabase from '@/lib/supabase';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderItems, setOrderItems] = useState<Record<string, any[]>>({});
+  const [orderDetails, setOrderDetails] = useState<Record<string, any[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<string>('created_at');
@@ -18,6 +19,8 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   
   const { toast } = useToast();
+  
+  const productNameCache = useRef<Record<string, string>>({});
   
   useEffect(() => {
     fetchOrders();
@@ -54,7 +57,6 @@ export default function AdminOrdersPage() {
   
   const fetchOrders = async () => {
     setIsLoading(true);
-    
     try {
       let query = supabase
         .from('orders')
@@ -71,23 +73,26 @@ export default function AdminOrdersPage() {
       
       setOrders(data || []);
       
-      // Fetch order items for each order to get product details
-      const itemsByOrder: Record<string, any[]> = {};
-      
-      for (const order of data || []) {
-        const { data: itemsData } = await supabase
-          .from('order_items')
-          .select(`
-            *,
-            product:product_id(*)
-          `)
-          .eq('order_id', order.id);
-          
-        if (itemsData) {
-          itemsByOrder[order.id] = itemsData;
-        }
+      // Ambil semua order_details sekaligus
+      const { data: allDetails } = await supabase
+        .from('order_details')
+        .select('*');
+      const detailsByOrder: Record<string, any[]> = {};
+      for (const detail of allDetails || []) {
+        if (!detailsByOrder[detail.order_id]) detailsByOrder[detail.order_id] = [];
+        detailsByOrder[detail.order_id].push(detail);
       }
-      
+      setOrderDetails(detailsByOrder);
+
+      // (Tetap ambil order_items untuk fallback lama)
+      const { data: allItems } = await supabase
+        .from('order_items')
+        .select('*, product:product_id(*)');
+      const itemsByOrder: Record<string, any[]> = {};
+      for (const item of allItems || []) {
+        if (!itemsByOrder[item.order_id]) itemsByOrder[item.order_id] = [];
+        itemsByOrder[item.order_id].push(item);
+      }
       setOrderItems(itemsByOrder);
     } catch (error: any) {
       toast({
@@ -116,19 +121,19 @@ export default function AdminOrdersPage() {
         .from('orders')
         .update({ status: newStatus })
         .eq('id', orderId);
-
+      
       if (error) {
         console.error('Error updating order status:', error);
         throw error;
       }
-
+      
       // Update local state
       setOrders(prev => 
         prev.map(order => 
           order.id === orderId ? { ...order, status: newStatus } : order
         )
       );
-
+      
       toast({
         title: "Status Updated",
         description: `Order status has been updated to ${newStatus}`
@@ -154,19 +159,19 @@ export default function AdminOrdersPage() {
         .from('orders')
         .update({ payment_status: newStatus })
         .eq('id', orderId);
-
+      
       if (error) {
         console.error('Error updating payment status:', error);
         throw error;
       }
-
+      
       // Update local state
       setOrders(prev => 
         prev.map(order => 
           order.id === orderId ? { ...order, payment_status: newStatus } : order
         )
       );
-
+      
       toast({
         title: "Payment Status Updated",
         description: `Payment status has been updated to ${newStatus}`
@@ -188,14 +193,49 @@ export default function AdminOrdersPage() {
   // Get product names for an order
   const getProductNames = (orderId: string) => {
     const items = orderItems[orderId] || [];
-    return items.map(item => item.product?.name || 'Unknown Product').join(', ');
+    return items.map(item => {
+      if (item.product && item.product.name) {
+        return `${item.product.name} x${item.quantity}`;
+      }
+      // Jika relasi produk null, cari manual dari tabel products
+      if (productNameCache.current[item.product_id]) {
+        return `${productNameCache.current[item.product_id]} x${item.quantity}`;
+      }
+      // Query manual ke tabel products
+      supabase.from('products').select('name').eq('id', item.product_id).single().then(({ data }) => {
+        if (data && data.name) {
+          productNameCache.current[item.product_id] = data.name;
+          // Paksa re-render
+          setOrderItems((prev) => ({ ...prev }));
+        }
+      });
+      return `${item.product_id} x${item.quantity}`;
+    }).join(', ');
+  };
+  
+  const getOrderSummary = (order: any) => {
+    const details = orderDetails[order.id] || [];
+    if (details.length > 0) {
+      return details.map(item => `${item.product_name}${item.topping_name ? ' + ' + item.topping_name : ''} x${item.quantity}`).join(', ');
+    }
+    // fallback lama
+    const items = orderItems[order.id] || [];
+    return items.map(item => {
+      if (item.product && item.product.name) {
+        return `${item.product.name} x${item.quantity}`;
+      }
+      if (productNameCache.current[item.product_id]) {
+        return `${productNameCache.current[item.product_id]} x${item.quantity}`;
+      }
+      return `${item.product_id} x${item.quantity}`;
+    }).join(', ') || 'Tidak ada detail';
   };
   
   const filteredOrders = orders.filter(order => 
     order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     order.customer_phone.includes(searchQuery) ||
     order.customer_address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    getProductNames(order.id).toLowerCase().includes(searchQuery.toLowerCase())
+    getOrderSummary(order).toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   const handleDeleteOrder = async (orderId: string) => {
@@ -306,13 +346,13 @@ export default function AdminOrdersPage() {
                   >
                     DATE {sortField === 'created_at' && (
                       sortDirection === 'asc' ? <ChevronUp className="inline h-4 w-4" /> : <ChevronDown className="inline h-4 w-4" />
-                    )}
+                      )}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     CUSTOMER
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    PRODUCTS
+                    DETAIL PESANAN
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     DELIVERY DATE
@@ -324,13 +364,16 @@ export default function AdminOrdersPage() {
                   >
                     AMOUNT {sortField === 'total_amount' && (
                       sortDirection === 'asc' ? <ChevronUp className="inline h-4 w-4" /> : <ChevronDown className="inline h-4 w-4" />
-                    )}
+                      )}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     STATUS
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     PAYMENT
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    BUKTI TRANSFER
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ACTIONS
@@ -348,7 +391,7 @@ export default function AdminOrdersPage() {
                       <div className="text-sm text-gray-500">{order.customer_phone}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{getProductNames(order.id)}</div>
+                      <div className="text-sm text-gray-900">{getOrderSummary(order)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(order.delivery_date).toLocaleDateString()}
@@ -365,7 +408,7 @@ export default function AdminOrdersPage() {
                             order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                             order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                             'bg-yellow-100 text-yellow-800'
-                          }`}
+                        }`}
                       >
                         <option value="pending">Pending</option>
                         <option value="processing">Processing</option>
@@ -380,11 +423,18 @@ export default function AdminOrdersPage() {
                         className={`text-sm rounded-full px-3 py-1 font-semibold
                           ${order.payment_status === 'paid' ? 'bg-green-100 text-green-800' :
                             'bg-red-100 text-red-800'
-                          }`}
+                        }`}
                       >
                         <option value="unpaid">Unpaid</option>
                         <option value="paid">Paid</option>
                       </select>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {order.payment_proof_url ? (
+                        <a href={order.payment_proof_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Lihat Bukti Transfer</a>
+                      ) : (
+                        <span className="text-gray-400">Belum ada</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <Link

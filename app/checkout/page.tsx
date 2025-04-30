@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
-import { formatCurrency, getMinDeliveryDate, getMaxDeliveryDate } from '@/lib/utils';
+import { formatCurrency, getMinDeliveryDate, getMaxDeliveryDate, calculateCartTotal } from '@/lib/utils';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CheckoutSummary from '@/components/CheckoutSummary';
@@ -40,15 +40,10 @@ type Cart = CartItem[];
 interface OrderData {
   customer_name: string;
   customer_phone: string;
-  delivery_address: string;
+  customer_address: string;
   delivery_date: string;
-  delivery_time: string;
   notes: string;
   total_amount: number;
-  payment_method: string;
-  payment_status: string;
-  status: string;
-  is_delivery: boolean;
 }
 
 function CheckoutContent() {
@@ -60,31 +55,18 @@ function CheckoutContent() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [isDelivery, setIsDelivery] = useState(true);
-  const total = searchParams.get('total') || '0';
-  const totalAmount = parseFloat(total);
+  const totalAmount = calculateCartTotal(cartItems);
   const [formData, setFormData] = useState<OrderData>({
     customer_name: '',
     customer_phone: '',
-    delivery_address: '',
+    customer_address: '',
     delivery_date: '',
-    delivery_time: '',
     notes: '',
     total_amount: totalAmount,
-    payment_method: 'cash',
-    payment_status: 'pending',
-    status: 'pending',
-    is_delivery: true,
   });
   
-  useEffect(() => {
-    const total = searchParams.get('total');
-    if (total) {
-      setFormData(prev => ({
-        ...prev,
-        total_amount: parseFloat(total) || 0
-      }));
-    }
-  }, [searchParams]);
+  const minDate = getMinDeliveryDate();
+  const maxDate = getMaxDeliveryDate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,28 +81,69 @@ function CheckoutContent() {
     }
 
     try {
-      const orderItems = cartItems.map((item: CartItem) => ({
-        product_id: item.product.id,
-        topping_id: item.selectedTopping?.id || null,
+      const orderItems = cartItems.map((item) => ({
+        product_id: item.product_id,
+        topping_id: item.topping_id || null,
         quantity: item.quantity,
-        unit_price: item.product.price + (item.selectedTopping?.price || 0)
+        unit_price: item.product?.price || 0,
+        topping_price: item.topping?.price || 0,
       }));
 
-      // Insert order into database
+      // Siapkan orderItems untuk invoice/WhatsApp
+      const invoiceOrderItems = cartItems.map((item) => ({
+        product_id: item.product_id,
+        topping_id: item.topping_id || null,
+        quantity: item.quantity,
+        unit_price: item.product?.price || 0,
+        topping_price: item.topping?.price || 0,
+        name: item.product?.name || '',
+        price: (item.product?.price || 0) + (item.topping?.price || 0),
+        toppings: item.topping?.name || undefined,
+      }));
+
+      // Hanya kirim field yang sesuai database
+      const orderPayload = {
+        customer_name: formData.customer_name,
+        customer_phone: formData.customer_phone,
+        customer_address: formData.customer_address,
+        delivery_date: formData.delivery_date,
+        notes: formData.notes,
+        total_amount: formData.total_amount,
+      };
+
+      // Insert order ke database
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
-        .insert([formData])
+        .insert([orderPayload])
         .select()
         .single();
       
       if (orderError) throw orderError;
       
-      // Insert order items
+      // Insert order items ke Supabase pakai orderItems
       const { error: itemsError } = await supabase
         .from('order_items')
-        .insert(orderItems);
+        .insert(orderItems.map(item => ({ ...item, order_id: orderData.id })));
       
       if (itemsError) throw itemsError;
+      
+      // Setelah insert order_items
+      const orderDetails = cartItems.map((item) => ({
+        order_id: orderData.id,
+        product_name: item.product?.name || '',
+        topping_name: item.topping?.name || null,
+        quantity: item.quantity,
+      }));
+      const { error: detailsError } = await supabase
+        .from('order_details')
+        .insert(orderDetails);
+      if (detailsError) throw detailsError;
+      
+      // Simpan ke localStorage untuk invoice/WhatsApp
+      localStorage.setItem('lastOrder', JSON.stringify({
+        ...orderData,
+        items: invoiceOrderItems
+      }));
       
       // Clear cart after successful order
       clearCart();
@@ -132,7 +155,7 @@ function CheckoutContent() {
       });
       
       // Redirect to success page
-      router.push(`/checkout/success?id=${orderData.id}`);
+      router.push(`/checkout/complete?id=${orderData.id}`);
     } catch (error: any) {
       console.error('Error submitting order:', error);
       toast({
@@ -184,31 +207,16 @@ function CheckoutContent() {
                 />
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="is_delivery"
-                  name="is_delivery"
-                  checked={isDelivery}
-                  onCheckedChange={(checked) => {
-                    setIsDelivery(checked);
-                    setFormData(prev => ({ ...prev, is_delivery: checked }));
-                  }}
+              <div>
+                <Label htmlFor="customer_address">Alamat</Label>
+                <Textarea
+                  id="customer_address"
+                  name="customer_address"
+                  value={formData.customer_address}
+                  onChange={handleChange}
+                  required
                 />
-                <Label htmlFor="is_delivery">Delivery</Label>
               </div>
-              
-              {isDelivery && (
-                <div>
-                  <Label htmlFor="delivery_address">Delivery Address</Label>
-                  <Textarea
-                    id="delivery_address"
-                    name="delivery_address"
-                    value={formData.delivery_address}
-                    onChange={handleChange}
-                    required={isDelivery}
-                  />
-                </div>
-              )}
               
               <div>
                 <Label htmlFor="delivery_date">Delivery/Pickup Date</Label>
@@ -219,18 +227,8 @@ function CheckoutContent() {
                   value={formData.delivery_date}
                   onChange={handleChange}
                   required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="delivery_time">Delivery/Pickup Time</Label>
-                <Input
-                  id="delivery_time"
-                  name="delivery_time"
-                  type="time"
-                  value={formData.delivery_time}
-                  onChange={handleChange}
-                  required
+                  min={minDate}
+                  max={maxDate}
                 />
               </div>
               

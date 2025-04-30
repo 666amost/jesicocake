@@ -7,13 +7,13 @@ export const metadata: Metadata = {
 
 export async function generateStaticParams() {
   return [];
-}
+    }
 
 type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
-}
-
+  }
+  
 export default async function Page({ params }: Props) {
   return <ToppingForm id={params.id} />;
 }

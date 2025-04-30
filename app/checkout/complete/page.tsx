@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 import Link from "next/link";
 import { formatOrderForWhatsApp } from "@/lib/utils";
+import supabase from '@/lib/supabase';
 
 // Define interfaces for order data
 interface OrderItem {
@@ -50,21 +51,36 @@ export default function CheckoutCompletePage() {
   };
 
   const handleUpload = async () => {
-    if (!paymentProof) return;
-    
+    if (!paymentProof || !order?.id) return;
     setIsUploading(true);
-    
-    // In a real implementation, you would upload the file to your server
-    // and associate it with the order
-    setTimeout(() => {
-      setIsUploading(false);
+    try {
+      // Upload ke Supabase storage
+      const fileExt = paymentProof.name.split('.').pop();
+      const fileName = `order-${order.id}-${Date.now()}.${fileExt}`;
+      const { data, error } = await supabase.storage.from('bukti-pembayaran').upload(fileName, paymentProof);
+      if (error) throw error;
+      // Dapatkan public URL
+      const { data: publicUrlData } = supabase.storage.from('bukti-pembayaran').getPublicUrl(fileName);
+      const paymentProofUrl = publicUrlData?.publicUrl;
+      // Update order di Supabase
+      await supabase.from('orders').update({ payment_proof_url: paymentProofUrl }).eq('id', order.id);
       alert('Bukti pembayaran berhasil diunggah!');
-    }, 1500);
+    } catch (err) {
+      alert('Gagal upload bukti pembayaran!');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const getWhatsAppLink = () => {
     if (!order) return `https://wa.me/${phoneNumber}`;
-    return `https://wa.me/${phoneNumber}?text=${formatOrderForWhatsApp(order)}`;
+    const message =
+      `Halo Jesica, saya sudah melakukan order dan transfer.\n` +
+      `No. Order: ${order.id}\n` +
+      `Nama: ${order.customer_name}\n` +
+      `Total: Rp${order.total_amount?.toLocaleString('id-ID')}\n` +
+      `Bukti transfer sudah saya upload.`;
+    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   };
 
   return (
@@ -89,9 +105,13 @@ export default function CheckoutCompletePage() {
                 <p>Tanggal Pengiriman: {order.delivery_date}</p>
                 <p className="font-bold mt-2">Total: Rp{order.total_amount?.toLocaleString('id-ID')}</p>
               </div>
-              
+              <div className="bg-gray-50 p-4 rounded border mt-4">
+                <p className="font-medium mb-2">Detail Pembayaran</p>
+                <p>Bank: <b>BCA</b></p>
+                <p>No. Rekening: <b>7025-085-281</b></p>
+                <p>Atas Nama: <b>Jesica</b></p>
+              </div>
               <hr className="my-4" />
-              
               <div>
                 <h3 className="font-medium mb-2">Unggah Bukti Pembayaran</h3>
                 <div className="space-y-3">
@@ -102,7 +122,6 @@ export default function CheckoutCompletePage() {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                  
                   <Button 
                     onClick={handleUpload} 
                     disabled={!paymentProof || isUploading}
@@ -113,7 +132,6 @@ export default function CheckoutCompletePage() {
                   </Button>
                 </div>
               </div>
-              
               <div className="mt-6">
                 <a 
                   href={getWhatsAppLink()}
@@ -124,6 +142,32 @@ export default function CheckoutCompletePage() {
                   Konfirmasi pesanan dan kirim bukti transfer via WhatsApp
                 </a>
               </div>
+              {order && order.items && order.items.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="font-medium mb-2">Detail Produk Dipesan</h3>
+                  <table className="w-full text-sm border">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="py-2 px-2 text-left">Produk</th>
+                        <th className="py-2 px-2 text-center">Qty</th>
+                        <th className="py-2 px-2 text-right">Harga</th>
+                        <th className="py-2 px-2 text-right">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {order.items.map((item, idx) => (
+                        <tr key={idx}>
+                          <td className="py-2 px-2">{item.name || item.product_id}</td>
+                          <td className="py-2 px-2 text-center">{item.quantity}</td>
+                          <td className="py-2 px-2 text-right">Rp{item.price?.toLocaleString('id-ID') || '-'}</td>
+                          <td className="py-2 px-2 text-right">Rp{((item.price || 0) * (item.quantity || 0)).toLocaleString('id-ID')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="text-right font-bold mt-2">Total: Rp{order.total_amount?.toLocaleString('id-ID')}</div>
+                </div>
+              )}
             </div>
           ) : (
             <p>Memuat detail pesanan...</p>

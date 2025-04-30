@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
 
       // Check if user exists
       if (!data?.user) {
-        throw new Error('Authentication failed, no user data received.');
+         throw new Error('Authentication failed, no user data received.');
       }
 
       // Check admin role
@@ -67,52 +67,52 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full px-4 py-6">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-orange-500 p-4 text-center">
             <h1 className="text-xl font-bold text-white">Admin Login</h1>
-          </div>
+            </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
                 placeholder="admin@jesicocake.com"
-              />
-            </div>
+                />
+              </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
                 placeholder="••••••••"
-              />
-            </div>
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-orange-600 text-white py-2 px-4 rounded-md text-center font-medium hover:bg-orange-700 transition-colors disabled:bg-orange-300 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-orange-600 text-white py-2 px-4 rounded-md text-center font-medium hover:bg-orange-700 transition-colors disabled:bg-orange-300 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
     </div>
   );
 }
