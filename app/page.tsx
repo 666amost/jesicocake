@@ -75,7 +75,7 @@ export default function Home() {
               <div className="absolute bottom-0 left-0 p-8">
                 <h3 className="text-2xl font-playfair text-white mb-2">Kue Pernikahan</h3>
                 <p className="text-gray-200 font-montserrat mb-4">Kue mewah untuk hari pernikahanmu</p>
-                <a href="#" className="text-orange-300 font-montserrat text-sm uppercase tracking-wider hover:text-orange-400">
+                <a href="https://wa.me/6281290008991?text=Halo%20Jesica%2C%20saya%20ingin%20memesan%20Kue%20Pernikahan" target="_blank" rel="noopener noreferrer" className="text-orange-300 font-montserrat text-sm uppercase tracking-wider hover:text-orange-400">
                   Pesan Sekarang →
                 </a>
               </div>
@@ -92,7 +92,7 @@ export default function Home() {
               <div className="absolute bottom-0 left-0 p-8">
                 <h3 className="text-2xl font-playfair text-white mb-2">Kue Custom</h3>
                 <p className="text-gray-200 font-montserrat mb-4">Kue sesuai keinginanmu</p>
-                <a href="#" className="text-orange-300 font-montserrat text-sm uppercase tracking-wider hover:text-orange-400">
+                <a href="https://wa.me/6281290008991?text=Halo%20Jesica%2C%20saya%20ingin%20konsultasi%20Kue%20Custom" target="_blank" rel="noopener noreferrer" className="text-orange-300 font-montserrat text-sm uppercase tracking-wider hover:text-orange-400">
                   Konsultasi →
                 </a>
               </div>
