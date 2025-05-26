@@ -4,9 +4,7 @@ import { use } from 'react';
 import supabase from '@/lib/supabase';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ProductToppings from '@/components/ProductToppings';
-import AddToCartForm from '@/components/AddToCartForm';
-import { formatCurrency } from '@/lib/utils';
+import ProductDetailContent from '@/components/ProductDetailContent';
 
 export async function generateStaticParams() {
   return [];
@@ -60,8 +58,8 @@ export default async function ProductPage({ params }: Props) {
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 md:px-6 py-8">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="md:flex">
-              <div className="md:flex-shrink-0 relative h-64 md:h-auto md:w-1/2">
+            <div className="flex flex-col md:flex-row">
+              <div className="relative h-80 md:h-auto md:w-1/2 w-full">
                 <Image
                   src={product.image_url || 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg'}
                   alt={product.name}
@@ -70,29 +68,7 @@ export default async function ProductPage({ params }: Props) {
                   priority
                 />
               </div>
-              <div className="p-6 md:p-8 md:w-1/2">
-                <div className="uppercase tracking-wide text-sm text-orange-500 font-semibold">
-                  {product.category}
-                </div>
-                <h1 className="mt-2 text-3xl leading-tight font-bold text-gray-900">
-                  {product.name}
-                </h1>
-                <p className="mt-4 text-lg text-gray-600">{product.description}</p>
-                <p className="mt-4 text-2xl font-bold text-orange-600">
-                  {formatCurrency(product.price)}
-                </p>
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-3">Available Toppings</h3>
-                  <ProductToppings toppings={toppings} />
-                </div>
-                <div className="mt-8">
-                  <AddToCartForm 
-                    product={product} 
-                    toppings={toppings} 
-                    maxQuantity={product.stock} 
-                  />
-                </div>
-              </div>
+              <ProductDetailContent product={product} toppings={toppings} />
             </div>
           </div>
           {/* Related Products Section - Can be implemented in a future enhancement */}

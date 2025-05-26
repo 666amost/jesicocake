@@ -1,27 +1,33 @@
 import Image from 'next/image';
 import Header from '@/components/Header';
-import ProductGrid from '@/components/ProductGrid';
 import Footer from '@/components/Footer';
 import { Suspense } from 'react';
+import {
+  SparklesIcon,
+  GiftTopIcon,
+  ClockIcon,
+  ShieldCheckIcon,
+} from '@heroicons/react/24/outline';
+
+import DynamicProductGridWrapper from '@/components/DynamicProductGridWrapper';
 import ProductSkeleton from '@/components/ProductSkeleton';
-import { Cake, Gift, Clock, Award } from 'lucide-react';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-neutral-50 has-bottom-nav">
+    <main className="min-h-screen bg-neutral-50 has-bottom-nav pb-20">
       <Header />
       
       {/* Hero Section */}
-      <section className="relative h-[80vh] bg-[url('https://images.unsplash.com/photo-1578985545062-69928b1d9587')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
+      <section className="relative h-[90vh] bg-[url('https://images.unsplash.com/photo-1578985545062-69928b1d9587')] bg-cover bg-center">
+        <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="container mx-auto px-4 md:px-6 h-full flex items-center relative z-10">
-          <div className="max-w-2xl text-white">
-            <span className="inline-block font-cormorant uppercase text-sm tracking-widest text-orange-300 mb-3">Jesico Cake</span>
-            <h1 className="text-4xl md:text-6xl font-playfair font-medium mb-4 leading-tight">
+          <div className="max-w-3xl text-white">
+            <span className="inline-block font-cormorant uppercase text-md tracking-widest text-orange-300 mb-4">Jesico Cake</span>
+            <h1 className="text-5xl md:text-7xl font-playfair font-medium mb-6 leading-tight drop-shadow-lg">
               Kue Premium <br />
               <span className="text-orange-300">Untuk Momen Spesialmu</span>
             </h1>
-            <p className="font-montserrat text-gray-200 mb-8 text-lg leading-relaxed">
+            <p className="font-montserrat text-gray-200 mb-10 text-lg md:text-xl leading-relaxed">
               Temukan kelezatan kue premium kami yang dibuat dengan bahan berkualitas dan sentuhan tangan yang penuh cinta.
             </p>
             <div className="flex gap-4">
@@ -52,6 +58,7 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1578985545062-69928b1d9587"
                 alt="Kue Ulang Tahun"
                 fill
+                priority
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
@@ -104,37 +111,37 @@ export default function Home() {
       {/* Features */}
       <section className="py-20 bg-orange-50">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6">
-                <Cake className="w-8 h-8" />
+              <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl">
+                <SparklesIcon className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-playfair font-medium mb-2">Bahan Premium</h3>
-              <p className="text-gray-600">Menggunakan bahan berkualitas</p>
+              <p className="text-gray-700 font-montserrat">Menggunakan bahan berkualitas tinggi untuk rasa dan tekstur terbaik.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6">
-                <Gift className="w-8 h-8" />
+              <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl">
+                <GiftTopIcon className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-playfair font-medium mb-2">Pesan Custom</h3>
-              <p className="text-gray-600">Sesuai keinginanmu</p>
+              <p className="text-gray-700 font-montserrat">Wujudkan kue impianmu dengan layanan custom sesuai selera dan acara.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6">
-                <Clock className="w-8 h-8" />
+              <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl">
+                <ClockIcon className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-playfair font-medium mb-2">Pengiriman Tepat Waktu</h3>
-              <p className="text-gray-600">Sesuai jadwal</p>
+              <h3 className="text-xl font-playfair font-medium mb-2">Pengiriman Aman & Tepat Waktu</h3>
+              <p className="text-gray-700 font-montserrat">Kami memastikan kue sampai di tangan Anda dalam kondisi sempurna dan sesuai jadwal.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6">
-                <Award className="w-8 h-8" />
+              <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl">
+                <ShieldCheckIcon className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-playfair font-medium mb-2">Kualitas Terjamin</h3>
-              <p className="text-gray-600">Rasa dan tampilan premium</p>
+              <h3 className="text-xl font-playfair font-medium mb-2">Kualitas dan Rasa Terjamin</h3>
+              <p className="text-gray-700 font-montserrat">Setiap gigitan adalah pengalaman luar biasa, didukung oleh bahan premium dan resep rahasia.</p>
             </div>
           </div>
         </div>
@@ -154,7 +161,7 @@ export default function Home() {
           </div>
           
           <Suspense fallback={<ProductSkeleton />}>
-            <ProductGrid />
+            <DynamicProductGridWrapper />
           </Suspense>
         </div>
       </section>

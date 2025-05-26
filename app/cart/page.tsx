@@ -1,17 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, Trash2, ArrowLeft } from 'lucide-react';
+import {
+  ShoppingCartIcon,
+  TrashIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/24/outline';
 import { useCart } from '@/lib/CartContext';
 import { formatCurrency } from '@/lib/utils';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { gsap } from 'gsap';
 
 export default function CartPage() {
   const { cartItems, cartTotal, updateCartItem, removeCartItem } = useCart();
   
+  const pageTitleRef = useRef(null);
+  const cartItemsRef = useRef(null);
+  const orderSummaryRef = useRef(null);
+  
+  useEffect(() => {
+    if (pageTitleRef.current) {
+      gsap.fromTo(pageTitleRef.current, 
+        { opacity: 0, y: -20 }, 
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }
+      );
+    }
+
+    if (cartItemsRef.current) {
+      gsap.fromTo(cartItemsRef.current.children, 
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.1 }
+      );
+    }
+
+    if (orderSummaryRef.current) {
+      gsap.fromTo(orderSummaryRef.current, 
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.3 }
+      );
+    }
+
+  }, [cartItems]);
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -20,7 +53,7 @@ export default function CartPage() {
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 md:px-6 py-16 text-center">
             <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-              <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <ShoppingCartIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-800 mb-2">Your Cart is Empty</h1>
               <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
               
@@ -28,7 +61,7 @@ export default function CartPage() {
                 href="/#products" 
                 className="inline-flex items-center px-5 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeftIcon className="w-4 h-4 mr-2" />
                 Continue Shopping
               </Link>
             </div>
@@ -46,7 +79,7 @@ export default function CartPage() {
       
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 md:px-6 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Your Shopping Cart</h1>
+          <h1 ref={pageTitleRef} className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Your Shopping Cart</h1>
           
           <div className="lg:grid lg:grid-cols-3 lg:gap-8">
             <div className="lg:col-span-2">
@@ -55,7 +88,7 @@ export default function CartPage() {
                   <h2 className="text-lg font-semibold text-gray-800">Cart Items ({cartItems.length})</h2>
                 </div>
                 
-                <ul className="divide-y divide-gray-200">
+                <ul ref={cartItemsRef} className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
                     <li key={item.id} className="p-4 md:p-6 flex flex-col md:flex-row md:items-center">
                       <div className="md:w-24 md:h-24 relative mb-4 md:mb-0">
@@ -104,7 +137,7 @@ export default function CartPage() {
                             onClick={() => removeCartItem(item.id)}
                             className="text-red-500 hover:text-red-700 flex items-center gap-1"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <TrashIcon className="w-4 h-4" />
                             <span>Remove</span>
                           </button>
                         </div>
@@ -128,13 +161,13 @@ export default function CartPage() {
                   href="/#products" 
                   className="inline-flex items-center text-orange-600 hover:text-orange-700"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  <ArrowLeftIcon className="w-4 h-4 mr-1" />
                   Continue Shopping
                 </Link>
               </div>
             </div>
             
-            <div className="lg:col-span-1 mt-8 lg:mt-0">
+            <div ref={orderSummaryRef} className="lg:col-span-1 mt-8 lg:mt-0">
               <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
                 

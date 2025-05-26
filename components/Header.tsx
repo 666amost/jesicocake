@@ -1,15 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Menu, X, UserCog } from 'lucide-react';
+import { 
+  ShoppingBagIcon,
+  Bars3Icon,
+  XMarkIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useCart } from '@/lib/CartContext';
+import { gsap } from 'gsap';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { itemCount } = useCart();
+
+  const headerRef = useRef(null);
+  const navContentRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,15 +29,31 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const headerElement = headerRef.current;
+    const navContentElement = navContentRef.current;
+
+    if (headerElement && navContentElement) {
+      if (isScrolled) {
+        gsap.to(headerElement, { padding: '8px 0', duration: 0.3 });
+        gsap.to(navContentElement, { y: 0, duration: 0.3 });
+      } else {
+        gsap.to(headerElement, { padding: '16px 0', duration: 0.3 });
+        gsap.to(navContentElement, { y: 0, duration: 0.3 });
+      }
+    }
+  }, [isScrolled]);
+
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 w-full z-40 transition-colors duration-300 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-sm shadow-md py-2' 
+          ? 'bg-white/95 backdrop-blur-sm shadow-md'
           : 'bg-transparent py-4'
       }`}
     >
-      <div className="container mx-auto px-4 md:px-6">
+      <div ref={navContentRef} className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
             {/* You can replace with your actual logo */}
@@ -70,7 +95,7 @@ export default function Header() {
               href="/admin/login" 
               className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors"
             >
-              <UserCog className="w-5 h-5" />
+              <UserCircleIcon className="w-5 h-5" />
               <span className="font-montserrat text-xs uppercase">Admin</span>
             </Link>
             
@@ -79,7 +104,7 @@ export default function Header() {
               href="/cart" 
               className="relative p-2"
             >
-              <ShoppingBag className={`w-6 h-6 ${isScrolled ? 'text-gray-700' : 'text-gray-800'}`} />
+              <ShoppingBagIcon className={`w-6 h-6 ${isScrolled ? 'text-gray-700' : 'text-gray-800'}`} />
               {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-montserrat font-medium">
                   {itemCount}
@@ -93,9 +118,9 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
+                <XMarkIcon className="w-6 h-6 text-gray-700" />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
+                <Bars3Icon className="w-6 h-6 text-gray-700" />
               )}
             </button>
           </div>
@@ -139,7 +164,7 @@ export default function Header() {
               className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50 flex items-center"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <UserCog className="w-5 h-5 mr-2" />
+              <UserCircleIcon className="w-5 h-5 mr-2" />
               Admin Login
             </Link>
           </nav>

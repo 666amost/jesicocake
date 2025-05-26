@@ -93,15 +93,15 @@ export default function AddToCartForm({ product, toppings, maxQuantity }: AddToC
         </select>
       </div>
       
-      <div className="mb-4">
+      <div className="mb-6">
         <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
           Quantity
         </label>
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           <button
             type="button"
             onClick={() => setQuantity(q => Math.max(1, q - 1))}
-            className="px-3 py-1 bg-gray-200 rounded-l text-gray-700"
+            className="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={quantity <= 1}
           >
             -
@@ -113,12 +113,12 @@ export default function AddToCartForm({ product, toppings, maxQuantity }: AddToC
             max={maxQuantity}
             value={quantity}
             onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-            className="w-16 text-center border-gray-300 focus:border-orange-500 focus:ring focus:ring-orange-200"
+            className="w-20 text-center border-gray-300 rounded-md shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200"
           />
           <button
             type="button"
             onClick={() => setQuantity(q => Math.min(maxQuantity, q + 1))}
-            className="px-3 py-1 bg-gray-200 rounded-r text-gray-700"
+            className="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={quantity >= maxQuantity}
           >
             +
@@ -143,7 +143,7 @@ export default function AddToCartForm({ product, toppings, maxQuantity }: AddToC
               : 'bg-orange-600 hover:bg-orange-700'
           } text-white font-medium transition-colors`}
         >
-          {isSubmitting ? 'Adding...' : maxQuantity < 1 ? 'Out of Stock' : 'Add to Cart'}
+          {isSubmitting ? 'Processing...' : maxQuantity < 1 ? 'Stok Habis' : 'Pre-Order Sekarang'}
         </button>
       </div>
     </form>

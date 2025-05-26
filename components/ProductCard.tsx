@@ -20,7 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/product/${product.id}`}>
-        <div className="relative h-64 w-full overflow-hidden">
+        <div className="relative h-56 md:h-64 w-full overflow-hidden">
           <Image
             src={product.image_url || 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg'}
             alt={product.name}
@@ -40,25 +40,25 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
       
-      <div className="p-5">
+      <div className="p-4 md:p-5">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-playfair text-lg font-medium text-gray-800 mb-2 hover:text-orange-600 transition-colors">
+          <h3 className="font-playfair text-base md:text-lg font-medium text-gray-800 mb-2 hover:text-orange-600 transition-colors">
             {product.name}
           </h3>
         </Link>
         
         {product.description && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+          <p className="text-gray-600 text-sm mb-3 md:mb-4 line-clamp-2">{product.description}</p>
         )}
         
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-playfair font-semibold text-orange-600">
+        <div className="flex items-center justify-between mt-2 md:mt-3">
+          <span className="text-lg md:text-xl font-playfair font-semibold text-orange-600">
             {formatCurrency(product.price)}
           </span>
           
           <Link 
             href={`/product/${product.id}`}
-            className="px-4 py-2 bg-orange-600 text-white text-xs font-montserrat uppercase tracking-wider rounded-sm hover:bg-orange-700 transition-colors"
+            className="px-3 py-1.5 md:px-4 md:py-2 bg-orange-600 text-white text-xs font-montserrat uppercase tracking-wider rounded-sm hover:bg-orange-700 transition-colors"
           >
             View Details
           </Link>
