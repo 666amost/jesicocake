@@ -1,6 +1,6 @@
 {
-  "name": "nextjs",
-  "version": "0.1.0",
+  "name": "jesico-cake-web",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -39,7 +39,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "0.6.1",
     "@supabase/supabase-js": "^2.39.7",
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",
