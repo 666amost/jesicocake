@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Search, Eye, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { MagnifyingGlassIcon, EyeIcon, ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { Order } from '@/types';
@@ -302,7 +302,7 @@ export default function AdminOrdersPage() {
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-grow">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
           </div>
           <input
             type="text"
@@ -345,7 +345,7 @@ export default function AdminOrdersPage() {
                     onClick={() => handleSort('created_at')}
                   >
                     DATE {sortField === 'created_at' && (
-                      sortDirection === 'asc' ? <ChevronUp className="inline h-4 w-4" /> : <ChevronDown className="inline h-4 w-4" />
+                      sortDirection === 'asc' ? <ChevronUpIcon className="inline h-4 w-4" /> : <ChevronDownIcon className="inline h-4 w-4" />
                       )}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -363,7 +363,7 @@ export default function AdminOrdersPage() {
                     onClick={() => handleSort('total_amount')}
                   >
                     AMOUNT {sortField === 'total_amount' && (
-                      sortDirection === 'asc' ? <ChevronUp className="inline h-4 w-4" /> : <ChevronDown className="inline h-4 w-4" />
+                      sortDirection === 'asc' ? <ChevronUpIcon className="inline h-4 w-4" /> : <ChevronDownIcon className="inline h-4 w-4" />
                       )}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -441,13 +441,13 @@ export default function AdminOrdersPage() {
                         href={`/admin/orders/${order.id}`}
                         className="text-orange-600 hover:text-orange-900 inline-block"
                       >
-                        <Eye className="h-5 w-5" />
+                        <EyeIcon className="h-5 w-5" />
                       </Link>
                       <button
                         onClick={() => handleDeleteOrder(order.id)}
                         className="text-red-600 hover:text-red-900 inline-block"
                       >
-                        <Trash2 className="h-5 w-5" />
+                        <TrashIcon className="h-5 w-5" />
                       </button>
                     </td>
                   </tr>

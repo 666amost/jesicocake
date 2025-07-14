@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import Link from "next/link";
 import { formatOrderForWhatsApp } from "@/lib/utils";
 import supabase from '@/lib/supabase';
@@ -33,6 +33,7 @@ export default function CheckoutCompletePage() {
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const phoneNumber = "6281290008991";
+  const [user, setUser] = useState<any>(null);
 
   // This would typically come from your order context or URL params
   useEffect(() => {
@@ -43,6 +44,10 @@ export default function CheckoutCompletePage() {
     }
   }, []);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -51,19 +56,53 @@ export default function CheckoutCompletePage() {
   };
 
   const handleUpload = async () => {
+    if (!user) {
+      alert('Anda harus login untuk upload bukti pembayaran!');
+      return;
+    }
     if (!paymentProof || !order?.id) return;
     setIsUploading(true);
     try {
+      // Pastikan order milik user yang sedang login
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .select('id, user_id')
+        .eq('id', order.id)
+        .eq('user_id', user.id)
+        .single();
+      if (orderError || !orderData) {
+        alert('Order tidak ditemukan atau bukan milik Anda!');
+        setIsUploading(false);
+        return;
+      }
       // Upload ke Supabase storage
       const fileExt = paymentProof.name.split('.').pop();
       const fileName = `order-${order.id}-${Date.now()}.${fileExt}`;
       const { data, error } = await supabase.storage.from('bukti-pembayaran').upload(fileName, paymentProof);
-      if (error) throw error;
+      if (error) {
+        alert('Gagal upload ke storage: ' + error.message);
+        setIsUploading(false);
+        return;
+      }
       // Dapatkan public URL
       const { data: publicUrlData } = supabase.storage.from('bukti-pembayaran').getPublicUrl(fileName);
-      const paymentProofUrl = publicUrlData?.publicUrl;
-      // Update order di Supabase
-      await supabase.from('orders').update({ payment_proof_url: paymentProofUrl }).eq('id', order.id);
+      if (!publicUrlData?.publicUrl) {
+        alert('Gagal mendapatkan public URL dari storage!');
+        setIsUploading(false);
+        return;
+      }
+      const paymentProofUrl = publicUrlData.publicUrl;
+      // Update order di Supabase (hanya jika milik user)
+      const { error: updateError } = await supabase
+        .from('orders')
+        .update({ payment_proof_url: paymentProofUrl })
+        .eq('id', order.id)
+        .eq('user_id', user.id);
+      if (updateError) {
+        alert('Gagal update order dengan URL bukti pembayaran! Pastikan kolom payment_proof_url ada di tabel orders.');
+        setIsUploading(false);
+        return;
+      }
       alert('Bukti pembayaran berhasil diunggah!');
     } catch (err) {
       alert('Gagal upload bukti pembayaran!');
@@ -128,7 +167,7 @@ export default function CheckoutCompletePage() {
                     className="w-full"
                   >
                     {isUploading ? "Mengunggah..." : "Unggah Bukti Pembayaran"}
-                    {!isUploading && <Upload className="ml-2 h-4 w-4" />}
+                    {!isUploading && <ArrowUpTrayIcon className="ml-2 h-4 w-4" />}
                   </Button>
                 </div>
               </div>
@@ -157,7 +196,7 @@ export default function CheckoutCompletePage() {
                     <tbody>
                       {order.items.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="py-2 px-2">{item.name || item.product_id}</td>
+                          <td className="py-2 px-2">{item.name || ''}</td>
                           <td className="py-2 px-2 text-center">{item.quantity}</td>
                           <td className="py-2 px-2 text-right">Rp{item.price?.toLocaleString('id-ID') || '-'}</td>
                           <td className="py-2 px-2 text-right">Rp{((item.price || 0) * (item.quantity || 0)).toLocaleString('id-ID')}</td>

@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Save, Trash } from 'lucide-react';
+import { ArrowLeftIcon, ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/24/outline';
 import supabase from '@/lib/supabase';
 import { Product } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -200,7 +200,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
             href="/admin/products" 
             className="mr-4 text-gray-400 hover:text-gray-600"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeftIcon className="h-5 w-5" />
           </Link>
           <h1 className="text-2xl font-bold text-gray-800">
             {isNew ? 'Add New Product' : 'Edit Product'}
@@ -337,7 +337,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         }}
                         className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                       >
-                        <Trash className="w-4 h-4" />
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
@@ -401,7 +401,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             )}
-            <Save className="h-4 w-4 mr-1" />
+            <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
             {isSaving ? 'Saving...' : 'Save Product'}
           </button>
         </div>

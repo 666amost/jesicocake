@@ -27,15 +27,15 @@ export function generateOrderId(): string {
 
 export function getMinDeliveryDate(): string {
   const today = new Date();
-  const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 2); // Minimum 2 days in advance
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  minDate.setDate(minDate.getDate() + 3); // Minimum 2 days in advance, fix timezone issue
   return minDate.toISOString().split('T')[0];
 }
 
 export function getMaxDeliveryDate(): string {
   const today = new Date();
   const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + 7); // Maximum 7 days in advance
+  maxDate.setDate(today.getDate() + 30); // Maximum 30 days (1 bulan) in advance
   return maxDate.toISOString().split('T')[0];
 }
 

@@ -4,6 +4,7 @@ import { Playfair_Display, Cormorant_Garamond, Montserrat, Inter } from 'next/fo
 import { CartProvider } from '@/lib/CartContext';
 import { Toaster } from '@/components/ui/toaster';
 import BottomNavbar from '@/components/BottomNavbar';
+import { ThemeProvider } from '@/lib/theme';
 
 // Premium fonts for a luxury pastry brand
 const playfair = Playfair_Display({ 
@@ -35,21 +36,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${cormorant.variable} ${montserrat.variable} font-sans bg-neutral-50`}>
-      <body>
-        <CartProvider>
-          <main>
-          {children}
-          </main>
-          <BottomNavbar />
-          <Toaster />
-        </CartProvider>
+    <html lang="en">
+      <body className="bg-orange-50 min-h-screen font-sans">
+        <ThemeProvider>
+          <CartProvider>
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-1 w-full max-w-md mx-auto bg-orange-50 md:max-w-full md:px-0">
+                {children}
+              </main>
+              <BottomNavbar />
+              <Toaster />
+            </div>
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

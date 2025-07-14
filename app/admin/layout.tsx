@@ -79,7 +79,7 @@ export default function AdminLayout({
 
   // Render layout and content if user is admin
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col text-gray-900 dark:text-gray-100">
       <AdminHeader user={user} />
 
       <div className="flex-grow flex">

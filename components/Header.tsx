@@ -11,11 +11,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { useCart } from '@/lib/CartContext';
 import { gsap } from 'gsap';
+import supabase from '@/lib/supabase';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { itemCount } = useCart();
+  const [user, setUser] = useState<any>(null);
 
   const headerRef = useRef(null);
   const navContentRef = useRef(null);
@@ -44,6 +46,10 @@ export default function Header() {
     }
   }, [isScrolled]);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
+
   return (
     <header 
       ref={headerRef}
@@ -70,10 +76,10 @@ export default function Header() {
               Home
             </Link>
             <Link 
-              href="/#products" 
+              href="/catalog" 
               className="font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:text-orange-600 transition-colors"
             >
-              Products
+              Catalog
             </Link>
             <Link 
               href="/about" 
@@ -91,13 +97,32 @@ export default function Header() {
           
           <div className="flex items-center space-x-4">
             {/* Admin Link */}
-            <Link 
-              href="/admin/login" 
-              className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors"
-            >
-              <UserCircleIcon className="w-5 h-5" />
-              <span className="font-montserrat text-xs uppercase">Admin</span>
-            </Link>
+            {user ? (
+              <Link 
+                href="/account" 
+                className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors"
+              >
+                <UserCircleIcon className="w-5 h-5" />
+                <span className="font-montserrat text-xs uppercase">Account</span>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/account" 
+                  className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors"
+                >
+                  <UserCircleIcon className="w-5 h-5" />
+                  <span className="font-montserrat text-xs uppercase">Login</span>
+                </Link>
+                <Link 
+                  href="/account" 
+                  className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors"
+                >
+                  <UserCircleIcon className="w-5 h-5" />
+                  <span className="font-montserrat text-xs uppercase">Register</span>
+                </Link>
+              </>
+            )}
             
             {/* Cart Icon */}
             <Link 
@@ -139,11 +164,11 @@ export default function Header() {
               Home
             </Link>
             <Link 
-              href="/#products" 
+              href="/catalog" 
               className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Products
+              Catalog
             </Link>
             <Link 
               href="/about" 
@@ -159,14 +184,35 @@ export default function Header() {
             >
               Contact
             </Link>
-            <Link 
-              href="/admin/login"
-              className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50 flex items-center"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <UserCircleIcon className="w-5 h-5 mr-2" />
-              Admin Login
-            </Link>
+            {user ? (
+              <Link 
+                href="/account"
+                className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserCircleIcon className="w-5 h-5 mr-2" />
+                Account
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/account"
+                  className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50 flex items-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircleIcon className="w-5 h-5 mr-2" />
+                  Login
+                </Link>
+                <Link 
+                  href="/account"
+                  className="px-4 py-3 font-montserrat text-sm uppercase tracking-wide text-gray-700 hover:bg-gray-50 flex items-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircleIcon className="w-5 h-5 mr-2" />
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}

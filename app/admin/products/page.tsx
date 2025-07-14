@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PlusCircle, Edit, Trash2, Search } from 'lucide-react';
+import { PlusCircleIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { Product } from '@/types';
@@ -116,7 +116,7 @@ export default function AdminProductsPage() {
           href="/admin/products/new"
           className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
         >
-          <PlusCircle className="w-5 h-5 mr-2" />
+          <PlusCircleIcon className="w-5 h-5 mr-2" />
           Add New Product
         </Link>
       </div>
@@ -125,7 +125,7 @@ export default function AdminProductsPage() {
         <div className="p-4 border-b border-gray-200">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
             </div>
             <input
               type="text"
@@ -222,13 +222,13 @@ export default function AdminProductsPage() {
                           href={`/admin/products/${product.id}`}
                           className="text-blue-600 hover:text-blue-900"
                         >
-                          <Edit className="h-4 w-4" />
+                          <PencilSquareIcon className="h-4 w-4" />
                         </Link>
                         <button
                           onClick={() => deleteProduct(product)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <TrashIcon className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

@@ -85,6 +85,22 @@ export async function updateOrderStatus(id: string, status: string) {
   return data;
 }
 
+export async function getAllOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select(`
+      *,
+      order_items:order_items (
+        *,
+        product:products (*),
+        topping:toppings (*)
+      )
+    `)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
 // Cart functions
 export async function getOrCreateCart(sessionId: string) {
   // Try to find an existing cart

@@ -1,14 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Users, 
-  DollarSign,
-  Clock,
-  Plus 
-} from 'lucide-react';
+import { CakeIcon, UserGroupIcon, CurrencyDollarIcon, ClockIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
 import supabase from '@/lib/supabase';
@@ -125,179 +118,107 @@ export default function AdminDashboardPage() {
   }
   
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome to the admin dashboard</p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-blue-50 p-3 rounded-full">
-              <ShoppingBag className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <h2 className="text-sm text-gray-500 uppercase tracking-wider">Total Products</h2>
-              <p className="text-2xl font-medium text-gray-800">{stats.totalProducts}</p>
-            </div>
+    <div className="pb-24 md:pb-0">
+      {/* Statistik Header */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-xl shadow p-5 border border-blue-200 dark:border-blue-900">
+          <div className="bg-blue-500 text-white rounded-full p-4 mb-2 shadow-lg">
+            <CakeIcon className="h-8 w-8" />
           </div>
+          <span className="text-xs font-semibold text-blue-700 dark:text-blue-200 uppercase tracking-wider">Total Products</span>
+          <span className="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-1">{stats.totalProducts}</span>
         </div>
-        
-        <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-green-50 p-3 rounded-full">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <h2 className="text-sm text-gray-500 uppercase tracking-wider">Total Orders</h2>
-              <p className="text-2xl font-medium text-gray-800">{stats.totalOrders}</p>
-            </div>
+        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-xl shadow p-5 border border-green-200 dark:border-green-900">
+          <div className="bg-green-500 text-white rounded-full p-4 mb-2 shadow-lg">
+            <UserGroupIcon className="h-8 w-8" />
           </div>
+          <span className="text-xs font-semibold text-green-700 dark:text-green-200 uppercase tracking-wider">Total Orders</span>
+          <span className="text-2xl font-bold text-green-900 dark:text-green-100 mt-1">{stats.totalOrders}</span>
         </div>
-        
-        <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-orange-50 p-3 rounded-full">
-              <Clock className="h-6 w-6 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <h2 className="text-sm text-gray-500 uppercase tracking-wider">Pending Orders</h2>
-              <p className="text-2xl font-medium text-gray-800">{stats.pendingOrders}</p>
-            </div>
+        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-orange-50 dark:from-orange-900 dark:to-orange-800 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-900">
+          <div className="bg-orange-500 text-white rounded-full p-4 mb-2 shadow-lg">
+            <ClockIcon className="h-8 w-8" />
           </div>
+          <span className="text-xs font-semibold text-orange-700 dark:text-orange-200 uppercase tracking-wider">Pending Orders</span>
+          <span className="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-1">{stats.pendingOrders}</span>
         </div>
-        
-        <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-purple-50 p-3 rounded-full">
-              <DollarSign className="h-6 w-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <h2 className="text-sm text-gray-500 uppercase tracking-wider">Total Revenue</h2>
-              <p className="text-2xl font-medium text-gray-800">{formatCurrency(stats.totalRevenue)}</p>
-            </div>
+        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900 dark:to-purple-800 rounded-xl shadow p-5 border border-purple-200 dark:border-purple-900">
+          <div className="bg-purple-500 text-white rounded-full p-4 mb-2 shadow-lg flex items-center justify-center text-3xl font-bold">
+            Rp
           </div>
+          <span className="text-xs font-semibold text-purple-700 dark:text-purple-200 uppercase tracking-wider">Total Revenue</span>
+          <span className="text-2xl font-bold text-purple-900 dark:text-purple-100 mt-1">{formatCurrency(stats.totalRevenue)}</span>
         </div>
       </div>
-      
-      <div className="bg-white rounded-md shadow-sm p-6 mb-8 border border-gray-200">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-medium text-gray-800">Recent Orders</h2>
-          <Link href="/admin/orders" className="text-sm text-orange-600 hover:text-orange-700">View all</Link>
-        </div>
-        
-        {recentOrders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Delivery Date
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-800">{order.customer_name}</div>
-                      <div className="text-xs text-gray-500">{order.customer_phone}</div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {new Date(order.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {new Date(order.delivery_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-                      {formatCurrency(order.total_amount)}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1.5 text-xs rounded-sm uppercase tracking-wider ${
-                        order.status === 'pending' 
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : order.status === 'completed'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-8 bg-gray-50 rounded-md">
-            <div className="mb-4">
-              <Clock className="h-10 w-10 text-orange-300 mx-auto" />
-            </div>
-            <p className="text-gray-500 mb-2">No recent orders found.</p>
-            <p className="text-sm text-gray-400">Any new orders will appear here.</p>
-          </div>
-        )}
-      </div>
-      
+      {/* Section Recent Orders & Low Stock */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <section className="bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-gray-100 dark:border-gray-800 mb-6 lg:mb-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Low Stock Products</h2>
-            <Link href="/admin/products" className="text-sm text-orange-600 hover:text-orange-700">View all</Link>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Recent Orders</h2>
+            <Link href="/admin/orders" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">View all</Link>
           </div>
-          
+          {recentOrders.length > 0 ? (
+            <div className="overflow-x-auto -mx-2 md:mx-0">
+              <table className="min-w-[500px] md:min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-xs md:text-sm">
+                <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10">
+                  <tr>
+                    <th className="px-2 md:px-4 py-2 md:py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                    <th className="px-2 md:px-4 py-2 md:py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                    <th className="px-2 md:px-4 py-2 md:py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delivery Date</th>
+                    <th className="px-2 md:px-4 py-2 md:py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                    <th className="px-2 md:px-4 py-2 md:py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                  {recentOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <td className="px-2 md:px-4 py-2 md:py-4 "><div className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100">{order.customer_name}</div><div className="text-[10px] md:text-xs text-gray-500 dark:text-gray-300">{order.customer_phone}</div></td>
+                      <td className="px-2 md:px-4 py-2 md:py-4 ">{new Date(order.created_at).toLocaleDateString()}</td>
+                      <td className="px-2 md:px-4 py-2 md:py-4 ">{new Date(order.delivery_date).toLocaleDateString()}</td>
+                      <td className="px-2 md:px-4 py-2 md:py-4 ">{formatCurrency(order.total_amount)}</td>
+                      <td className="px-2 md:px-4 py-2 md:py-4 "><span className={`px-2 md:px-3 py-1 text-[10px] md:text-xs rounded-sm uppercase tracking-wider ${order.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' : order.status === 'completed' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>{order.status}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-4 md:py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
+              <div className="mb-2 md:mb-4">
+                <ClockIcon className="h-8 w-8 md:h-10 md:w-10 text-orange-300 mx-auto" />
+              </div>
+              <p className="text-gray-500 dark:text-gray-300 mb-1 md:mb-2 text-xs md:text-base">No recent orders found.</p>
+              <p className="text-[10px] md:text-sm text-gray-400 dark:text-gray-500">Any new orders will appear here.</p>
+            </div>
+          )}
+        </section>
+        <section className="bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Low Stock Products</h2>
+            <Link href="/admin/products" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">View all</Link>
+          </div>
           {lowStockProducts.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-2 md:space-y-4">
               {lowStockProducts.map((product) => (
                 <div key={product.id} className="flex items-center">
-                  <div className="w-12 h-12 relative flex-shrink-0">
-                    <Image
-                      src={product.image_url || '/images/product-placeholder.jpg'}
-                      alt={product.name}
-                      fill
-                      className="rounded object-cover"
-                    />
+                  <div className="w-8 h-8 md:w-12 md:h-12 relative flex-shrink-0">
+                    <Image src={product.image_url || '/images/product-placeholder.jpg'} alt={product.name} fill className="rounded object-cover" />
                   </div>
-                  <div className="ml-4 flex-grow">
-                    <h3 className="text-sm font-medium text-gray-800">{product.name}</h3>
-                    <p className="text-xs text-red-600">Only {product.stock} left in stock</p>
+                  <div className="ml-2 md:ml-4 flex-grow">
+                    <h3 className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100">{product.name}</h3>
+                    <p className="text-[10px] md:text-xs text-red-600 dark:text-red-400">Only {product.stock} left in stock</p>
                   </div>
-                  <Link
-                    href={`/admin/products/${product.id}`}
-                    className="text-sm text-orange-600 hover:text-orange-700"
-                  >
-                    Update
-                  </Link>
+                  <Link href={`/admin/products/${product.id}`} className="text-xs md:text-sm text-orange-600 hover:text-orange-700">Update</Link>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-4">No low stock products.</p>
+            <p className="text-gray-500 dark:text-gray-300 text-center py-2 md:py-4 text-xs md:text-base">No low stock products.</p>
           )}
-
-          <div className="mt-6">
-            <Link
-              href="/admin/products/new"
-              className="flex items-center justify-center w-full px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add New Product
-            </Link>
+          <div className="mt-3 md:mt-6">
+            <Link href="/admin/products/new" className="flex items-center justify-center w-full px-2 md:px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors text-xs md:text-base"><PlusIcon className="w-4 h-4 md:w-5 md:h-5 mr-2" />Add New Product</Link>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

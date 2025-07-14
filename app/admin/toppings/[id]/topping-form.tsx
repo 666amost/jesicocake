@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface ToppingFormProps {
   id: string;
@@ -99,7 +99,7 @@ export default function ToppingForm({ id }: ToppingFormProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <ArrowPathIcon className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function ToppingForm({ id }: ToppingFormProps) {
         
         <div className="flex space-x-4">
           <Button type="submit" disabled={isSaving}>
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSaving && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
             {isNew ? 'Create Topping' : 'Update Topping'}
           </Button>
           <Button

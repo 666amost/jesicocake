@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOrder, getOrderById, updateOrderStatus } from '@/lib/db';
+import { createOrder, getOrderById, updateOrderStatus, getAllOrders } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const exportJson = searchParams.get('export');
+
+    if (exportJson === 'json') {
+      const orders = await getAllOrders();
+      return NextResponse.json(orders);
+    }
 
     if (!id) {
       return NextResponse.json(

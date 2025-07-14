@@ -1,51 +1,35 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  HomeIcon,
-  ShoppingBagIcon,
-  Squares2X2Icon,
-  MagnifyingGlassIcon,
-  UserIcon,
-} from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
+import { HomeIcon, ShoppingBagIcon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon } from '@heroicons/react/24/outline';
+
+const navs = [
+  { href: '/', label: 'Home', icon: HomeIcon },
+  { href: '/catalog', label: 'Catalog', icon: ShoppingBagIcon },
+  { href: '/search', label: 'Search', icon: MagnifyingGlassIcon },
+  { href: '/cart', label: 'Cart', icon: ShoppingCartIcon },
+  { href: '/account', label: 'Account', icon: UserIcon },
+];
 
 export default function BottomNavbar() {
   const pathname = usePathname();
-  
-  // Don't show bottom navbar on admin pages
-  if (pathname.startsWith('/admin')) {
-    return null;
-  }
-
+  if (pathname.startsWith('/admin')) return null;
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
-      <div className="flex items-center justify-around px-2 py-2">
-        <Link href="/" className="flex flex-col items-center p-2 text-center">
-          <HomeIcon className={`w-6 h-6 ${pathname === '/' ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'}`} />
-          <span className={`text-xs mt-1 ${pathname === '/' ? 'text-orange-600 font-semibold' : 'text-gray-500 group-hover:text-orange-600'}`}>Home</span>
-        </Link>
-        
-        <Link href="/#products" className="flex flex-col items-center p-2 text-center">
-          <Squares2X2Icon className={`w-6 h-6 ${pathname === '/#products' ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'}`} />
-          <span className={`text-xs mt-1 ${pathname === '/#products' ? 'text-orange-600 font-semibold' : 'text-gray-500 group-hover:text-orange-600'}`}>Catalog</span>
-        </Link>
-        
-        <Link href="/search" className="flex flex-col items-center p-2 text-center">
-          <MagnifyingGlassIcon className={`w-6 h-6 ${pathname === '/search' ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'}`} />
-          <span className={`text-xs mt-1 ${pathname === '/search' ? 'text-orange-600 font-semibold' : 'text-gray-500 group-hover:text-orange-600'}`}>Search</span>
-        </Link>
-        
-        <Link href="/cart" className="flex flex-col items-center p-2 text-center">
-          <ShoppingBagIcon className={`w-6 h-6 ${pathname === '/cart' ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'}`} />
-          <span className={`text-xs mt-1 ${pathname === '/cart' ? 'text-orange-600 font-semibold' : 'text-gray-500 group-hover:text-orange-600'}`}>Cart</span>
-        </Link>
-        
-        <Link href="/account" className="flex flex-col items-center p-2 text-center">
-          <UserIcon className={`w-6 h-6 ${pathname === '/account' ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'}`} />
-          <span className={`text-xs mt-1 ${pathname === '/account' ? 'text-orange-600 font-semibold' : 'text-gray-500 group-hover:text-orange-600'}`}>Account</span>
-        </Link>
-      </div>
-    </div>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t flex justify-around items-center h-16 md:hidden">
+      {navs.map(({ href, label, icon: Icon }) => {
+        const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={`flex flex-col items-center justify-center flex-1 py-1 ${active ? 'text-orange-600 font-bold' : 'text-gray-400'}`}
+          >
+            <Icon className={`w-7 h-7 mb-1 ${active ? 'text-orange-500' : ''}`} />
+            <span className="text-xs font-semibold tracking-wide">{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 } 

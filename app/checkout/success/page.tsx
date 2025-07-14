@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone } from 'lucide-react';
+import { PhoneIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { QRCodeSVG } from 'qrcode.react';
 import supabase from '@/lib/supabase';
 import { formatCurrency, getWhatsAppUrl } from '@/lib/utils';
@@ -12,7 +12,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Order, OrderItem } from '@/types';
 import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -247,7 +246,7 @@ function SuccessContent() {
                 onClick={() => window.open(whatsappUrl, '_blank')}
                 className="w-full max-w-md px-6 py-3 bg-orange-600 text-white rounded-md font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center"
                 >
-                <Phone className="w-5 h-5 mr-2" />
+                <PhoneIcon className="w-5 h-5 mr-2" />
                 OK - Lanjutkan ke WhatsApp
               </button>
             </div>

@@ -10,12 +10,14 @@ import CheckoutSummary from '@/components/CheckoutSummary';
 import supabase from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { UserCircle2, UserPlus } from 'lucide-react';
+import { UserCircleIcon, UserPlusIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import AuthForm from '@/components/AuthForm';
+import { addDays, format } from 'date-fns';
 
 interface Product {
   id: string;
@@ -52,7 +54,7 @@ function CheckoutContent() {
   const { cartItems, clearCart } = useCart();
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [isDelivery, setIsDelivery] = useState(true);
   const totalAmount = calculateCartTotal(cartItems);
@@ -64,6 +66,48 @@ function CheckoutContent() {
     notes: '',
     total_amount: totalAmount,
   });
+  const [user, setUser] = useState<any>(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // Cek user login dan ambil profile
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        // Fetch profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setFormData(prev => ({
+          ...prev,
+          customer_name: profile?.name || '',
+          customer_phone: profile?.phone || '',
+          customer_address: profile?.address || '',
+        }));
+      }
+      setProfileLoaded(true);
+    };
+    fetchUser();
+  }, []);
+
+  // Jika belum login, tampilkan AuthForm
+  if (!user && profileLoaded) {
+    return (
+      <div className="min-h-screen flex flex-col bg-orange-50">
+        <Header />
+        <main className="flex-grow flex flex-col items-center justify-center p-4">
+          <div className="w-full max-w-md mx-auto">
+            <h1 className="text-2xl font-bold text-center mb-4">Login or Register to Checkout</h1>
+            <AuthForm onSuccess={() => window.location.reload()} />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
   
   const minDate = getMinDeliveryDate();
   const maxDate = getMaxDeliveryDate();
@@ -82,8 +126,8 @@ function CheckoutContent() {
 
     try {
       const orderItems = cartItems.map((item) => ({
-        product_id: item.product_id,
-        topping_id: item.topping_id || null,
+        product_id: item.product?.id,
+        topping_id: item.topping?.id || null,
         quantity: item.quantity,
         unit_price: item.product?.price || 0,
         topping_price: item.topping?.price || 0,
@@ -91,8 +135,8 @@ function CheckoutContent() {
 
       // Siapkan orderItems untuk invoice/WhatsApp
       const invoiceOrderItems = cartItems.map((item) => ({
-        product_id: item.product_id,
-        topping_id: item.topping_id || null,
+        product_id: item.product?.id,
+        topping_id: item.topping?.id || null,
         quantity: item.quantity,
         unit_price: item.product?.price || 0,
         topping_price: item.topping?.price || 0,
@@ -114,7 +158,7 @@ function CheckoutContent() {
       // Insert order ke database
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
-        .insert([orderPayload])
+        .insert([{ ...orderPayload, user_id: user.id }])
         .select()
         .single();
       

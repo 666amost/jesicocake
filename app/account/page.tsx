@@ -9,12 +9,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AuthForm from '@/components/AuthForm';
+import EditProfileModal from '@/components/EditProfileModal';
 
 export default function AccountPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -90,31 +93,12 @@ export default function AccountPage() {
   
   if (!userData) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-orange-50">
         <Header />
-        <main className="flex-grow pt-20">
-          <div className="container max-w-4xl mx-auto py-10 px-4">
-            <h1 className="text-3xl font-bold mb-6">My Account</h1>
-            
-            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <h2 className="text-xl font-semibold mb-4">Please Login or Register</h2>
-              <p className="text-gray-600 mb-6">You need to login or create an account to view this page.</p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={handleLogin}
-                  className="bg-orange-600 text-white hover:bg-orange-700"
-                >
-                  Login
-                </Button>
-                <Button
-                  onClick={handleRegister}
-                  className="bg-gray-600 text-white hover:bg-gray-700"
-                >
-                  Register
-                </Button>
-              </div>
-            </div>
+        <main className="flex-grow flex flex-col items-center justify-center p-4">
+          <div className="w-full max-w-md mx-auto">
+            <h1 className="text-2xl font-bold text-center mb-4">Login or Register to view your account</h1>
+            <AuthForm onSuccess={() => window.location.reload()} />
           </div>
         </main>
         <Footer />
@@ -123,116 +107,62 @@ export default function AccountPage() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-orange-50">
       <Header />
-      <main className="flex-grow pt-20">
-        <div className="container max-w-4xl mx-auto py-10 px-4">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">My Account</h1>
-            <Button variant="outline" onClick={handleLogout}>Logout</Button>
+      <main className="flex-grow pt-4 pb-16 px-2">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-orange-100 rounded-full p-3">
+                <span className="text-3xl font-bold text-orange-500">{userData.name[0]}</span>
+              </div>
+              <div>
+                <div className="font-bold text-lg text-orange-700">{userData.name}</div>
+                <div className="text-sm text-gray-500">{userData.email}</div>
+              </div>
+            </div>
+            <div className="mb-2">
+              <span className="block text-xs text-gray-500">Phone</span>
+              <span className="block font-medium">{userData.phone}</span>
+            </div>
+            <div className="mb-2">
+              <span className="block text-xs text-gray-500">Address</span>
+              <span className="block font-medium">{userData.address}</span>
+            </div>
+            <Button variant="outline" className="w-full mt-4" onClick={() => setEditOpen(true)}>Edit Profile</Button>
+            <Button variant="outline" className="w-full mt-2" onClick={handleLogout}>Logout</Button>
           </div>
-          
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Manage your personal information</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-1">Name</p>
-                    <p className="text-gray-700">{userData.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-1">Email</p>
-                    <p className="text-gray-700">{userData.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-1">Phone</p>
-                    <p className="text-gray-700">{userData.phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-1">Address</p>
-                    <p className="text-gray-700">{userData.address}</p>
-                  </div>
-                  <Button variant="outline" className="mt-2">Edit Profile</Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Order History</CardTitle>
-                <CardDescription>View your past orders</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {orders.length > 0 ? (
-                    <div className="divide-y">
-                      {orders.slice(0, 3).map((order) => (
-                        <div key={order.id} className="py-3">
-                          <div className="flex justify-between">
-                            <div>
-                              <p className="font-medium">Order #{order.id.substring(0, 8)}</p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(order.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-medium">{formatCurrency(order.total_amount)}</p>
-                              <span className={`text-xs px-2 py-1 rounded-full ${
-                                order.status === 'completed' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : order.status === 'processing'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : order.status === 'cancelled'
-                                  ? 'bg-red-100 text-red-800'
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {order.status}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+          <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} profile={{ id: userData.id, name: userData.name, phone: userData.phone, address: userData.address }} onSuccess={() => window.location.reload()} />
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="font-bold text-lg mb-2 text-orange-700">Order History</div>
+            {orders.length > 0 ? (
+              <div className="divide-y">
+                {orders.map((order) => (
+                  <div key={order.id} className="py-3 flex justify-between items-center">
+                    <div>
+                      <div className="font-medium">Order #{order.id.substring(0, 8)}</div>
+                      <div className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString()}</div>
                     </div>
-                  ) : (
-                    <p className="text-gray-700">No orders yet.</p>
-                  )}
-                  
-                  {orders.length > 0 && (
-                    <Button 
-                      onClick={() => router.push('/account/orders')}
-                      variant="outline" 
-                      className="mt-2 w-full"
-                    >
-                      View All Orders
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Delivery Addresses</CardTitle>
-                <CardDescription>Manage your delivery addresses</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {userData.address ? (
-                    <div className="p-3 border rounded-md">
-                      <p className="font-medium">Default Address</p>
-                      <p className="text-gray-700">{userData.address}</p>
+                    <div className="text-right">
+                      <div className="font-bold text-orange-600">{formatCurrency(order.total_amount)}</div>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        order.status === 'completed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : order.status === 'processing'
+                          ? 'bg-blue-100 text-blue-800'
+                          : order.status === 'cancelled'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {order.status}
+                      </span>
                     </div>
-                  ) : (
-                    <p className="text-gray-700">No saved addresses.</p>
-                  )}
-                  <Button variant="outline" className="mt-2">Add New Address</Button>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-400">No orders yet.</div>
+            )}
           </div>
         </div>
       </main>

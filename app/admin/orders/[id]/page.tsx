@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Printer, Phone, RefreshCw } from 'lucide-react';
+import { ArrowLeftIcon, PrinterIcon, PhoneIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { QRCodeSVG } from 'qrcode.react';
 import supabase from '@/lib/supabase';
 import { formatCurrency, formatOrderForWhatsApp } from '@/lib/utils';
@@ -194,7 +194,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           href="/admin/orders"
           className="mt-4 inline-flex items-center text-orange-600 hover:text-orange-700"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeftIcon className="mr-2 h-4 w-4" />
           Back to Orders
         </Link>
       </div>
@@ -209,7 +209,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             href="/admin/orders" 
             className="mr-4 text-gray-400 hover:text-gray-600"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeftIcon className="h-5 w-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
@@ -227,14 +227,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             disabled={isRefreshing}
             className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <ArrowPathIcon className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         <button
           onClick={handlePrint}
             className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
         >
-          <Printer className="w-5 h-5 mr-2" />
+          <PrinterIcon className="w-5 h-5 mr-2" />
           Print Invoice
         </button>
           
@@ -242,7 +242,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             onClick={sendWhatsAppNotification}
             className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           >
-            <Phone className="w-5 h-5 mr-2" />
+            <PhoneIcon className="w-5 h-5 mr-2" />
             Notifikasi Pelanggan
           </button>
         </div>
