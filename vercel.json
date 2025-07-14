@@ -1,0 +1,8 @@
+{
+  "cron": [
+    {
+      "path": "/api/ping-db",
+      "schedule": "0 0 * * *"
+    }
+  ]
+} 
