@@ -76,6 +76,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@eslint/plugin-kit": "^0.3.3",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/uuid": "^10.0.0"
   }

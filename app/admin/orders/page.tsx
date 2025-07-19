@@ -140,7 +140,7 @@ export default function AdminOrdersPage() {
       });
 
       // Refresh data untuk memastikan sinkronisasi
-      await fetchOrders();
+      // await fetchOrders(); // HAPUS INI
 
     } catch (error: any) {
       console.error('Update status error:', error);
@@ -178,7 +178,7 @@ export default function AdminOrdersPage() {
       });
 
       // Refresh data untuk memastikan sinkronisasi
-      await fetchOrders();
+      // await fetchOrders(); // HAPUS INI
 
     } catch (error: any) {
       console.error('Update payment status error:', error);
