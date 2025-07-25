@@ -32,7 +32,7 @@ export async function GET() {
     
     return NextResponse.json({
       success: true,
-      message: `Daily maintenance executed successfully. Updated ${data?.length || 0} orders.`,
+      message: `Daily maintenance executed successfully. Updated orders.`,
       timestamp: new Date().toISOString()
     });
     
