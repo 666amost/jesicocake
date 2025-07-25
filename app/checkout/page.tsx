@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import { formatCurrency, getMinDeliveryDate, getMaxDeliveryDate, calculateCartTotal } from '@/lib/utils';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CheckoutSummary from '@/components/CheckoutSummary';
 import supabase from '@/lib/supabase';
@@ -96,8 +95,7 @@ function CheckoutContent() {
   // Jika belum login, tampilkan AuthForm
   if (!user && profileLoaded) {
     return (
-      <div className="min-h-screen flex flex-col bg-orange-50">
-        <Header />
+      <div className="min-h-screen flex flex-col bg-orange-50">        
         <main className="flex-grow flex flex-col items-center justify-center p-4">
           <div className="w-full max-w-md mx-auto">
             <h1 className="text-2xl font-bold text-center mb-4">Login or Register to Checkout</h1>

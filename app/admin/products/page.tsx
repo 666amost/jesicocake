@@ -7,6 +7,7 @@ import { PlusCircleIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from
 import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { Product } from '@/types';
+import { getFallbackImage } from '@/lib/imageUtils';
 // MODIFIKASI: Mengubah path import untuk useToast
 import { useToast } from '@/hooks/use-toast'; // <-- Path import yang benar
 
@@ -174,7 +175,7 @@ export default function AdminProductsPage() {
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0 relative">
                           <Image
-                            src={product.image_url || 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg'}
+                            src={product.image_url || getFallbackImage('cake')}
                             alt={product.name}
                             fill
                             className="object-cover rounded-md"

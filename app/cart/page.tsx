@@ -10,16 +10,16 @@ import {
 } from '@heroicons/react/24/outline';
 import { useCart } from '@/lib/CartContext';
 import { formatCurrency } from '@/lib/utils';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { gsap } from 'gsap';
+import { getFallbackImage } from '@/lib/imageUtils';
 
 export default function CartPage() {
   const { cartItems, cartTotal, updateCartItem, removeCartItem } = useCart();
   
-  const pageTitleRef = useRef(null);
-  const cartItemsRef = useRef(null);
-  const orderSummaryRef = useRef(null);
+  const pageTitleRef = useRef<HTMLHeadingElement>(null);
+  const cartItemsRef = useRef<HTMLUListElement>(null);
+  const orderSummaryRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (pageTitleRef.current) {
@@ -29,7 +29,7 @@ export default function CartPage() {
       );
     }
 
-    if (cartItemsRef.current) {
+    if (cartItemsRef.current && cartItemsRef.current.children.length > 0) {
       gsap.fromTo(cartItemsRef.current.children, 
         { opacity: 0, x: -20 },
         { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.1 }
@@ -47,9 +47,7 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        
+      <div className="min-h-screen flex flex-col">        
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 md:px-6 py-16 text-center">
             <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
@@ -74,9 +72,7 @@ export default function CartPage() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
+    <div className="min-h-screen flex flex-col">      
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 md:px-6 py-8">
           <h1 ref={pageTitleRef} className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Your Shopping Cart</h1>
@@ -93,7 +89,7 @@ export default function CartPage() {
                     <li key={item.id} className="p-4 md:p-6 flex flex-col md:flex-row md:items-center">
                       <div className="md:w-24 md:h-24 relative mb-4 md:mb-0">
                         <Image
-                          src={item.product?.image_url || 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg'}
+                          src={item.product?.image_url || getFallbackImage('cake')}
                           alt={item.product?.name || 'Product'}
                           width={96}
                           height={96}

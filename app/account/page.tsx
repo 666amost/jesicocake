@@ -7,10 +7,11 @@ import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AuthForm from '@/components/AuthForm';
 import EditProfileModal from '@/components/EditProfileModal';
+
+
 
 export default function AccountPage() {
   const router = useRouter();
@@ -78,8 +79,7 @@ export default function AccountPage() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
+      <div className="min-h-screen flex flex-col">        
         <main className="flex-grow pt-20 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
@@ -93,8 +93,7 @@ export default function AccountPage() {
   
   if (!userData) {
     return (
-      <div className="min-h-screen flex flex-col bg-orange-50">
-        <Header />
+      <div className="min-h-screen flex flex-col bg-orange-50">        
         <main className="flex-grow flex flex-col items-center justify-center p-4">
           <div className="w-full max-w-md mx-auto">
             <h1 className="text-2xl font-bold text-center mb-4">Login or Register to view your account</h1>
@@ -107,8 +106,7 @@ export default function AccountPage() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-orange-50">
-      <Header />
+    <div className="min-h-screen flex flex-col bg-orange-50">      
       <main className="flex-grow pt-4 pb-16 px-2">
         <div className="max-w-md mx-auto">
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import { CartItem } from '@/types';
+import { getFallbackImage } from '@/lib/imageUtils';
 
 interface CheckoutSummaryProps {
   cartItems: CartItem[];
@@ -20,7 +21,7 @@ export default function CheckoutSummary({ cartItems, cartTotal }: CheckoutSummar
             <div key={item.id} className="flex gap-3">
               <div className="flex-shrink-0 w-16 h-16 relative rounded overflow-hidden bg-gray-100">
                 <Image
-                  src={item.product?.image_url || 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg'}
+                  src={item.product?.image_url || getFallbackImage('cake')}
                   alt={item.product?.name || 'Product'}
                   fill
                   className="object-cover"

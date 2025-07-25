@@ -8,7 +8,6 @@ import { PhoneIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { QRCodeSVG } from 'qrcode.react';
 import supabase from '@/lib/supabase';
 import { formatCurrency, getWhatsAppUrl } from '@/lib/utils';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Order, OrderItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -89,8 +88,7 @@ function SuccessContent() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
+      <div className="min-h-screen flex flex-col">        
         <main className="flex-grow pt-20 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
@@ -105,8 +103,7 @@ function SuccessContent() {
   // Error state - Order not found
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
+      <div className="min-h-screen flex flex-col">        
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 md:px-6 py-16 text-center">
             <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
@@ -128,8 +125,7 @@ function SuccessContent() {
   
   // Success state - Show order details
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <div className="min-h-screen flex flex-col">      
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 md:px-6 py-8">
           <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">

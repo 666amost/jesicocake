@@ -9,23 +9,32 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      // Mobile-first breakpoints
+      screens: {
+        'xs': '475px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
       },
-      fontFamily: {
-        playfair: ['var(--font-playfair)'], 
-        montserrat: ['var(--font-montserrat)'],
-        sans: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
-      },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
+      
+      // JESICO CAKE custom colors
       colors: {
+        jesico: {
+          primary: '#D97706', // Orange-600
+          'primary-light': '#F59E0B', // Orange-500
+          secondary: '#92400E', // Orange-800
+          accent: '#FED7AA', // Orange-200
+          cream: '#FEF3E2', // Orange-50
+          gold: '#B45309', // Orange-700
+        },
+        cake: {
+          vanilla: '#FFFBEB', // Warm-50
+          chocolate: '#78350F', // Brown-900
+          strawberry: '#F87171', // Red-400
+          caramel: '#D97706', // Amber-600
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -67,35 +76,58 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
       },
-      boxShadow: {
-        'premium-sm': '0 2px 10px rgba(0, 0, 0, 0.05)',
-        'premium-md': '0 4px 20px rgba(0, 0, 0, 0.08)',
-        'premium-lg': '0 8px 30px rgba(0, 0, 0, 0.12)',
+      
+      // Custom fonts
+      fontFamily: {
+        playfair: ['var(--font-playfair)', 'Georgia', 'serif'], 
+        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        poppins: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
       },
-      keyframes: {
-        'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-        },
-        'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
-        },
+      
+      // Custom spacing for mobile
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
       },
+      
+      // Custom border radius
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+      },
+      
+      // Custom animations for mobile interactions
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'bounce-subtle': 'bounce 1s infinite',
+        'pulse-slow': 'pulse 3s infinite',
+        'float': 'float 3s ease-in-out infinite',
+      },
+      
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
     },
   },
   plugins: [require('tailwindcss-animate')],
 };
+
 export default config;
