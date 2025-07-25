@@ -335,9 +335,10 @@ export default function AdminOrdersPage() {
             <p className="mt-4 text-gray-600">Loading orders...</p>
           </div>
         ) : filteredOrders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="overflow-x-auto overflow-y-hidden" style={{ minWidth: '100%' }}>
+            <div style={{ minWidth: '1200px' }}>
+              <table className="w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
                 <tr>
                   <th 
                     scope="col" 
@@ -454,6 +455,7 @@ export default function AdminOrdersPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         ) : (
           <div className="text-center py-8">

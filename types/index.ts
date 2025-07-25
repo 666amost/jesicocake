@@ -47,6 +47,7 @@ export interface Order {
   total_amount: number
   status: string
   payment_status: string
+  payment_proof_url?: string | null
   notes: string | null
   created_at: string
   updated_at: string
