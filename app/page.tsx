@@ -2,13 +2,16 @@ import Link from 'next/link';
 import { 
   ShoppingBagIcon, 
   StarIcon, 
-  TruckIcon, 
-  ShieldCheckIcon, 
-  SparklesIcon,
-  ClockIcon,
   CakeIcon,
-  HeartIcon 
+  HeartIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
+import {
+  ShieldCheckIcon as ShieldCheckIconSolid,
+  SparklesIcon as SparklesIconSolid,
+  ClockIcon as ClockIconSolid,
+  TruckIcon as TruckIconSolid
+} from '@heroicons/react/24/solid';
 import OptimizedImage from '@/components/OptimizedImage';
 
 export default function HomePage() {
@@ -54,26 +57,15 @@ export default function HomePage() {
               <CakeIcon className="w-5 h-5 inline mr-2" />
               Lihat Koleksi
             </Link>
-            <Link 
-              href="/checkout" 
-              className="bg-white text-orange-600 font-bold rounded-full px-8 py-3 text-base border-2 border-orange-500 shadow-lg hover:bg-orange-50 transition-all duration-300"
+            <a
+              href="https://wa.me/6281290008991?text=halo%20saya%20ingin%20mau%20konsultasi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-orange-600 font-bold rounded-full px-8 py-3 text-base border-2 border-orange-500 shadow-lg hover:bg-orange-50 transition-all duration-300 flex items-center justify-center"
             >
               <ClockIcon className="w-5 h-5 inline mr-2" />
-              Pre-Order
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Pre-Order Notice */}
-      <section className="mx-3 -mt-6 relative z-20">
-        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl p-4 shadow-lg">
-          <div className="flex items-center justify-center text-center">
-            <ClockIcon className="w-6 h-6 mr-3 flex-shrink-0" />
-            <div>
-              <p className="font-bold text-lg">Sistem Pre-Order</p>
-              <p className="text-sm opacity-90">Pesan 2-3 hari sebelum acara untuk kualitas terbaik</p>
-            </div>
+              Konsultasi via WhatsApp
+            </a>
           </div>
         </div>
       </section>
@@ -115,7 +107,7 @@ export default function HomePage() {
               </p>
               <div className="flex items-center justify-between">
                 <span className="bg-orange-100 text-orange-700 rounded-full px-3 py-1 text-xs font-bold">
-                  Pre-Order 2 Hari
+                  Konsultasi 2 Hari
                 </span>
                 <HeartIcon className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
               </div>
@@ -147,7 +139,7 @@ export default function HomePage() {
               </p>
               <div className="flex items-center justify-between">
                 <span className="bg-amber-100 text-amber-700 rounded-full px-3 py-1 text-xs font-bold">
-                  Pre-Order 3 Hari
+                  Konsultasi 3 Hari
                 </span>
                 <HeartIcon className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
               </div>
@@ -155,8 +147,10 @@ export default function HomePage() {
           </Link>
 
           {/* Custom Cakes */}
-          <Link 
-            href="/product/custom" 
+          <a
+            href="https://wa.me/6281290008991?text=halo%20saya%20ingin%20mau%20konsultasi"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 sm:col-span-2 lg:col-span-1"
           >
             <div className="relative overflow-hidden">
@@ -184,7 +178,7 @@ export default function HomePage() {
                 <HeartIcon className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
               </div>
             </div>
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -201,8 +195,8 @@ export default function HomePage() {
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-            <div className="bg-orange-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <ShieldCheckIcon className="w-8 h-8 text-orange-600" />
+            <div className="bg-orange-500 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <ShieldCheckIconSolid className="w-8 h-8 text-white" />
             </div>
             <h3 className="font-bold text-sm text-gray-800 mb-2">Bahan Premium</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
@@ -211,8 +205,8 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-            <div className="bg-purple-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <SparklesIcon className="w-8 h-8 text-purple-600" />
+            <div className="bg-orange-500 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <SparklesIconSolid className="w-8 h-8 text-white" />
             </div>
             <h3 className="font-bold text-sm text-gray-800 mb-2">Desain Custom</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
@@ -221,18 +215,18 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-            <div className="bg-blue-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <ClockIcon className="w-8 h-8 text-blue-600" />
+            <div className="bg-orange-500 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <ClockIconSolid className="w-8 h-8 text-white" />
             </div>
-            <h3 className="font-bold text-sm text-gray-800 mb-2">Pre-Order Sistem</h3>
+            <h3 className="font-bold text-sm text-gray-800 mb-2">Konsultasi Sistem</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
               Pesan di muka untuk memastikan kualitas dan kesegaran optimal
             </p>
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-            <div className="bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <TruckIcon className="w-8 h-8 text-green-600" />
+            <div className="bg-orange-500 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <TruckIconSolid className="w-8 h-8 text-white" />
             </div>
             <h3 className="font-bold text-sm text-gray-800 mb-2">Pengiriman Aman</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
@@ -246,7 +240,7 @@ export default function HomePage() {
       <section className="mt-12 px-4">
         <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-6 text-white">
           <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-            Cara Pre-Order di JESICO
+            Cara Konsultasi di JESICO
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -287,7 +281,7 @@ export default function HomePage() {
               className="bg-white text-orange-600 font-bold rounded-full px-8 py-3 text-sm hover:bg-orange-50 transition-colors inline-flex items-center"
             >
               <CakeIcon className="w-4 h-4 mr-2" />
-              Mulai Pre-Order Sekarang
+              Mulai Konsultasi Sekarang
             </Link>
           </div>
         </div>
@@ -325,7 +319,7 @@ export default function HomePage() {
                   "Kue ulang tahun dari JESICO benar-benar luar biasa! Desainnya cantik banget dan rasanya premium. 
                   Anak saya sampai nggak mau bagi ke teman-temannya. Pasti order lagi!"
                 </p>
-                <p className="text-xs text-gray-500 mt-2">Pre-order Birthday Cake Custom</p>
+                <p className="text-xs text-gray-500 mt-2">Konsultasi Birthday Cake Custom</p>
               </div>
             </div>
           </div>
@@ -350,7 +344,7 @@ export default function HomePage() {
                   "Wedding cake dari JESICO jadi highlight acara pernikahan kami. Semua tamu bilang ini kue terindah 
                   yang pernah mereka lihat. Tim JESICO sangat profesional dan detail!"
                 </p>
-                <p className="text-xs text-gray-500 mt-2">Pre-order Wedding Cake 3-Tier</p>
+                <p className="text-xs text-gray-500 mt-2">Konsultasi Wedding Cake 3-Tier</p>
               </div>
             </div>
           </div>
@@ -375,7 +369,7 @@ export default function HomePage() {
                   "Pertama kali pre-order di JESICO untuk acara graduation. Prosesnya mudah, tim nya responsif, 
                   dan hasilnya melebihi ekspektasi. Worth every penny!"
                 </p>
-                <p className="text-xs text-gray-500 mt-2">Pre-order Custom Graduation Cake</p>
+                <p className="text-xs text-gray-500 mt-2">Konsultasi Custom Graduation Cake</p>
               </div>
             </div>
           </div>

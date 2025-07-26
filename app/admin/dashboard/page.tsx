@@ -121,33 +121,33 @@ export default function AdminDashboardPage() {
     <div className="pb-24 md:pb-0">
       {/* Statistik Header */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-xl shadow p-5 border border-blue-200 dark:border-blue-900">
-          <div className="bg-blue-500 text-white rounded-full p-4 mb-2 shadow-lg">
+        <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-700">
+          <div className="bg-orange-500 text-white rounded-full p-4 mb-2 shadow-lg">
             <CakeIcon className="h-8 w-8" />
           </div>
-          <span className="text-xs font-semibold text-blue-700 dark:text-blue-200 uppercase tracking-wider">Total Products</span>
-          <span className="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-1">{stats.totalProducts}</span>
+          <span className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wider">Total Products</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.totalProducts}</span>
         </div>
-        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-xl shadow p-5 border border-green-200 dark:border-green-900">
-          <div className="bg-green-500 text-white rounded-full p-4 mb-2 shadow-lg">
+        <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-700">
+          <div className="bg-orange-500 text-white rounded-full p-4 mb-2 shadow-lg">
             <UserGroupIcon className="h-8 w-8" />
           </div>
-          <span className="text-xs font-semibold text-green-700 dark:text-green-200 uppercase tracking-wider">Total Orders</span>
-          <span className="text-2xl font-bold text-green-900 dark:text-green-100 mt-1">{stats.totalOrders}</span>
+          <span className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wider">Total Orders</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.totalOrders}</span>
         </div>
-        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-orange-50 dark:from-orange-900 dark:to-orange-800 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-900">
+        <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-700">
           <div className="bg-orange-500 text-white rounded-full p-4 mb-2 shadow-lg">
             <ClockIcon className="h-8 w-8" />
           </div>
-          <span className="text-xs font-semibold text-orange-700 dark:text-orange-200 uppercase tracking-wider">Pending Orders</span>
-          <span className="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-1">{stats.pendingOrders}</span>
+          <span className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wider">Pending Orders</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.pendingOrders}</span>
         </div>
-        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900 dark:to-purple-800 rounded-xl shadow p-5 border border-purple-200 dark:border-purple-900">
-          <div className="bg-purple-500 text-white rounded-full p-4 mb-2 shadow-lg flex items-center justify-center text-3xl font-bold">
-            Rp
+        <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-900 rounded-xl shadow p-5 border border-orange-200 dark:border-orange-700">
+          <div className="bg-orange-500 text-white rounded-full p-4 mb-2 shadow-lg flex items-center justify-center text-3xl font-bold">
+            <CurrencyDollarIcon className="h-8 w-8" />
           </div>
-          <span className="text-xs font-semibold text-purple-700 dark:text-purple-200 uppercase tracking-wider">Total Revenue</span>
-          <span className="text-2xl font-bold text-purple-900 dark:text-purple-100 mt-1">{formatCurrency(stats.totalRevenue)}</span>
+          <span className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wider">Total Revenue</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{formatCurrency(stats.totalRevenue)}</span>
         </div>
       </div>
       {/* Section Recent Orders & Low Stock */}

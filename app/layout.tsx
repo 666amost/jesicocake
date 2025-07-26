@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import BottomNavbar from '@/components/BottomNavbar';
 import { ThemeProvider } from '@/lib/theme';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 // Premium fonts for JESICO CAKE brand
 const playfair = Playfair_Display({ 
@@ -91,7 +92,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {children}
                 </div>
               </main>
-              
+              {/* Footer - Only show on desktop */}
+              <div className="hidden md:block">
+                <Footer />
+              </div>
               {/* Bottom Navigation - Mobile Only */}
               <BottomNavbar />
               

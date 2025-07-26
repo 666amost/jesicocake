@@ -109,14 +109,6 @@ export default function BottomNavbar() {
             );
           })}
         </div>
-        
-        {/* Pre-order floating button */}
-        <Link
-          href="/checkout"
-          className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-orange-500 to-amber-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-        >
-          <ClockIcon className="w-6 h-6" />
-        </Link>
       </nav>
     </>
   );

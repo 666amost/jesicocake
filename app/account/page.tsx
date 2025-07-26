@@ -7,7 +7,6 @@ import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Footer from '@/components/Footer';
 import AuthForm from '@/components/AuthForm';
 import EditProfileModal from '@/components/EditProfileModal';
 
@@ -86,7 +85,6 @@ export default function AccountPage() {
             <p className="mt-4 text-gray-600">Loading account information...</p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -100,7 +98,6 @@ export default function AccountPage() {
             <AuthForm onSuccess={() => window.location.reload()} />
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -164,7 +161,6 @@ export default function AccountPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 } 

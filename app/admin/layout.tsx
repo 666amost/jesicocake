@@ -82,10 +82,12 @@ export default function AdminLayout({
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col text-gray-900 dark:text-gray-100">
       <AdminHeader user={user} />
 
-      <div className="flex-grow flex">
+      <div className="flex-grow flex overflow-hidden">
         <AdminSidebar />
-        <main className="flex-grow p-6 mt-16">
-          {children}
+        <main className="flex-grow p-6 mt-16 overflow-auto min-w-0">
+          <div className="min-w-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

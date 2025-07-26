@@ -36,7 +36,7 @@ export default function AdminSidebar() {
   ];
   
   return (
-    <aside className="w-64 bg-white dark:bg-gray-900 shadow-md hidden md:block text-gray-700 dark:text-gray-200">
+    <aside className="w-56 bg-white dark:bg-gray-900 shadow-md hidden md:block text-gray-700 dark:text-gray-200 flex-shrink-0">
       <nav className="py-4">
         <ul className="space-y-1">
           {navItems.map((item) => {

@@ -25,6 +25,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { itemCount } = useCart();
+  const [showCartWarning, setShowCartWarning] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,11 +74,11 @@ export default function Header() {
             <div className="hidden xl:flex items-center space-x-4 text-sm text-gray-600">
               <div className="flex items-center">
                 <PhoneIcon className="w-4 h-4 mr-1" />
-                <span>+62 812-3456-7890</span>
+                <span>+62812-9000-8991</span>
               </div>
               <div className="flex items-center">
                 <ClockIcon className="w-4 h-4 mr-1" />
-                <span>Pre-Order 2-3 Hari</span>
+                <span>Pre-Order 2-7 Hari</span>
               </div>
             </div>
 
@@ -95,16 +96,6 @@ export default function Header() {
             <Link href="/account" className="p-2 text-gray-700 hover:text-orange-600 transition-colors">
               <UserCircleIcon className="w-6 h-6" />
             </Link>
-
-            {/* Pre-Order CTA */}
-            <Link 
-              href="/checkout"
-              className="hidden sm:flex bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:from-orange-600 hover:to-amber-600 transition-all duration-300 shadow-md hover:shadow-lg items-center"
-            >
-              <ClockIcon className="w-4 h-4 mr-2" />
-              Pre-Order
-            </Link>
-
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -119,10 +110,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-orange-200 py-4">
-            <div className="space-y-2">
+          <div className="lg:hidden">
+            <div className="flex flex-col space-y-1 py-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -137,11 +128,11 @@ export default function Header() {
                 <div className="px-3 py-2 text-sm text-gray-600">
                   <div className="flex items-center mb-2">
                     <PhoneIcon className="w-4 h-4 mr-2" />
-                    <span>+62 812-3456-7890</span>
+                    <span>+62812-9000-8991</span>
                   </div>
                   <div className="flex items-center">
                     <ClockIcon className="w-4 h-4 mr-2" />
-                    <span>Pre-Order 2-3 Hari Sebelumnya</span>
+                    <span>Pre-Order 2-7 Hari Sebelumnya</span>
                   </div>
                 </div>
               </div>

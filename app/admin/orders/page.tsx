@@ -7,6 +7,7 @@ import supabase from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { Order } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import './scrollbar.css';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -116,21 +117,32 @@ export default function AdminOrdersPage() {
   
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      // Hanya lakukan update tanpa meminta return data
+      console.log('Updating order status to:', newStatus, 'for order:', orderId);
+      
+      // Update database tanpa select untuk menghindari error
       const { error } = await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', orderId);
       
       if (error) {
-        console.error('Error updating order status:', error);
-        throw error;
+        console.error('Database update error:', error);
+        throw new Error(`Update failed: ${error.message || 'Unknown database error'}`);
       }
       
-      // Update local state
+      console.log('Database update successful');
+      
+      // Update local state setelah database berhasil diupdate
       setOrders(prev => 
         prev.map(order => 
-          order.id === orderId ? { ...order, status: newStatus } : order
+          order.id === orderId ? { 
+            ...order, 
+            status: newStatus, 
+            updated_at: new Date().toISOString() 
+          } : order
         )
       );
       
@@ -138,9 +150,6 @@ export default function AdminOrdersPage() {
         title: "Status Updated",
         description: `Order status has been updated to ${newStatus}`
       });
-
-      // Refresh data untuk memastikan sinkronisasi
-      // await fetchOrders(); // HAPUS INI
 
     } catch (error: any) {
       console.error('Update status error:', error);
@@ -154,21 +163,32 @@ export default function AdminOrdersPage() {
   
   const updatePaymentStatus = async (orderId: string, newStatus: string) => {
     try {
-      // Hanya lakukan update tanpa meminta return data
+      console.log('Updating payment status to:', newStatus, 'for order:', orderId);
+      
+      // Update database tanpa select untuk menghindari error
       const { error } = await supabase
         .from('orders')
-        .update({ payment_status: newStatus })
+        .update({ 
+          payment_status: newStatus,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', orderId);
       
       if (error) {
-        console.error('Error updating payment status:', error);
-        throw error;
+        console.error('Database update error:', error);
+        throw new Error(`Update failed: ${error.message || 'Unknown database error'}`);
       }
       
-      // Update local state
+      console.log('Database update successful');
+      
+      // Update local state setelah database berhasil diupdate
       setOrders(prev => 
         prev.map(order => 
-          order.id === orderId ? { ...order, payment_status: newStatus } : order
+          order.id === orderId ? { 
+            ...order, 
+            payment_status: newStatus, 
+            updated_at: new Date().toISOString() 
+          } : order
         )
       );
       
@@ -176,9 +196,6 @@ export default function AdminOrdersPage() {
         title: "Payment Status Updated",
         description: `Payment status has been updated to ${newStatus}`
       });
-
-      // Refresh data untuk memastikan sinkronisasi
-      // await fetchOrders(); // HAPUS INI
 
     } catch (error: any) {
       console.error('Update payment status error:', error);
@@ -293,13 +310,13 @@ export default function AdminOrdersPage() {
   };
   
   return (
-    <div>
-      <div className="mb-6">
+    <div className="h-full flex flex-col">
+      <div className="mb-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
         <p className="text-gray-600">Manage customer orders</p>
       </div>
       
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 flex-shrink-0">
         <div className="relative flex-grow">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
@@ -328,138 +345,118 @@ export default function AdminOrdersPage() {
         </div>
       </div>
       
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div 
+        className="bg-white rounded-lg shadow-sm overflow-hidden flex-grow min-h-0"
+      >
         {isLoading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading orders...</p>
           </div>
-        ) : filteredOrders.length > 0 ? (
-          <div className="overflow-x-auto overflow-y-hidden" style={{ minWidth: '100%' }}>
-            <div style={{ minWidth: '1200px' }}>
-              <table className="w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+        ) : (
+          <div className="overflow-x-auto table-scroll-container">
+            <table className="w-full divide-y divide-gray-200" style={{ minWidth: '1600px' }}>
+              <thead className="bg-gray-50">
                 <tr>
-                  <th 
-                    scope="col" 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('created_at')}
-                  >
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('created_at')}>
                     DATE {sortField === 'created_at' && (
                       sortDirection === 'asc' ? <ChevronUpIcon className="inline h-4 w-4" /> : <ChevronDownIcon className="inline h-4 w-4" />
-                      )}
+                    )}
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    CUSTOMER
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    DETAIL PESANAN
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    DELIVERY DATE
-                  </th>
-                  <th 
-                    scope="col" 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('total_amount')}
-                  >
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUSTOMER</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DETAIL PESANAN</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DELIVERY DATE</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('total_amount')}>
                     AMOUNT {sortField === 'total_amount' && (
                       sortDirection === 'asc' ? <ChevronUpIcon className="inline h-4 w-4" /> : <ChevronDownIcon className="inline h-4 w-4" />
-                      )}
+                    )}
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    STATUS
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    PAYMENT
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    BUKTI TRANSFER
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ACTIONS
-                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PAYMENT</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BUKTI TRANSFER</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(order.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{order.customer_name}</div>
-                      <div className="text-sm text-gray-500">{order.customer_phone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{getOrderSummary(order)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(order.delivery_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(order.total_amount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={order.status || 'pending'}
-                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                        className={`text-sm rounded-full px-3 py-1 font-semibold
-                          ${order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                            order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={order.payment_status || 'unpaid'}
-                        onChange={(e) => updatePaymentStatus(order.id, e.target.value)}
-                        className={`text-sm rounded-full px-3 py-1 font-semibold
-                          ${order.payment_status === 'paid' ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        <option value="unpaid">Unpaid</option>
-                        <option value="paid">Paid</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.payment_proof_url ? (
-                        <a href={order.payment_proof_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Lihat Bukti Transfer</a>
-                      ) : (
-                        <span className="text-gray-400">Belum ada</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="text-orange-600 hover:text-orange-900 inline-block"
-                      >
-                        <EyeIcon className="h-5 w-5" />
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteOrder(order.id)}
-                        className="text-red-600 hover:text-red-900 inline-block"
-                      >
-                        <TrashIcon className="h-5 w-5" />
-                      </button>
-                    </td>
+                {filteredOrders.length > 0 ? (
+                  filteredOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{order.customer_name}</div>
+                        <div className="text-sm text-gray-500">{order.customer_phone}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{getOrderSummary(order)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(order.delivery_date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatCurrency(order.total_amount)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <select
+                          value={order.status || 'pending'}
+                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          className={`text-sm rounded-full px-3 py-1 font-semibold
+                            ${order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                              order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="processing">Processing</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <select
+                          value={order.payment_status || 'unpaid'}
+                          onChange={(e) => updatePaymentStatus(order.id, e.target.value)}
+                          className={`text-sm rounded-full px-3 py-1 font-semibold
+                            ${order.payment_status === 'paid' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          <option value="unpaid">Unpaid</option>
+                          <option value="paid">Paid</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {order.payment_proof_url ? (
+                          <a href={order.payment_proof_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Lihat Bukti Transfer</a>
+                        ) : (
+                          <span className="text-gray-400">Belum ada</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="text-orange-600 hover:text-orange-900 inline-block"
+                        >
+                          <EyeIcon className="h-5 w-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteOrder(order.id)}
+                          className="text-red-600 hover:text-red-900 inline-block"
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center py-8 text-gray-500">No orders found</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-gray-600">No orders found</p>
           </div>
         )}
       </div>

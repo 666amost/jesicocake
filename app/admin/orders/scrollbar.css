@@ -1,0 +1,43 @@
+/* Force horizontal scrollbar to always be visible and better layout */
+.table-scroll-container {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: auto !important;
+  -ms-overflow-style: scrollbar !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+  height: 16px !important;
+  background: #f8fafc !important;
+  border-radius: 8px !important;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #f8fafc !important;
+  border-radius: 8px !important;
+  margin: 0 4px !important;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 8px !important;
+  border: 2px solid #f8fafc !important;
+  min-width: 20px !important;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+.table-scroll-container::-webkit-scrollbar-corner {
+  background: #f8fafc !important;
+}
+
+/* Make sure the container has proper dimensions */
+.table-scroll-container {
+  display: block !important;
+  width: 100% !important;
+}

@@ -261,7 +261,7 @@ function CheckoutContent() {
               </div>
               
               <div>
-                <Label htmlFor="delivery_date">Delivery/Pickup Date</Label>
+                <Label htmlFor="delivery_date">Tanggal Pengambilan / Pengiriman (Pre-Order 2-7 Hari)</Label>
                 <Input
                   id="delivery_date"
                   name="delivery_date"

@@ -28,7 +28,7 @@ export function generateOrderId(): string {
 export function getMinDeliveryDate(): string {
   const today = new Date();
   const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  minDate.setDate(minDate.getDate() + 3); // Minimum 2 days in advance, fix timezone issue
+  minDate.setDate(minDate.getDate() + 2); // Minimum 2 days in advance
   return minDate.toISOString().split('T')[0];
 }
 
