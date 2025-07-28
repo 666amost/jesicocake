@@ -24,6 +24,47 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fungsi download PDF invoice
+  const handleDownloadPDF = async (orderId?: string) => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const invoiceElement = document.querySelector('.print-invoice');
+      if (!invoiceElement) {
+        toast({
+          title: "Error",
+          description: "Invoice element not found",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      await html2pdf()
+        .set({
+          margin: 10,
+          filename: `invoice-${orderId?.slice(0, 8) || 'order'}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        })
+        .from(invoiceElement)
+        .save();
+        
+      toast({
+        title: "Success",
+        description: "PDF downloaded successfully"
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive"
+      });
+    }
+  };
   
   useEffect(() => {
     fetchOrderDetails(true);
@@ -363,16 +404,16 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               Order Details
             </h1>
             <p className="text-gray-600">
-              Order ID: {order.id}
+              Order ID: {order?.id || 'N/A'}
             </p>
           </div>
         </div>
         
-        <div className="flex gap-2 mt-4 sm:mt-0">
+        <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
           <button
             onClick={() => fetchOrderDetails(false)}
             disabled={isRefreshing}
-            className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm w-full sm:w-auto"
           >
             <ArrowPathIcon className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -380,17 +421,25 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           
           <button
             onClick={handlePrint}
-            className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+            className="inline-flex items-center justify-center px-3 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors text-sm w-full sm:w-auto"
           >
-            <PrinterIcon className="w-5 h-5 mr-2" />
+            <PrinterIcon className="w-4 h-4 mr-2" />
             Print Invoice
+          </button>
+
+          <button
+            onClick={() => handleDownloadPDF(order?.id)}
+            className="inline-flex items-center justify-center px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm w-full sm:w-auto"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path d="M12 16v-8m0 8l-4-4m4 4l4-4M4 20h16" /></svg>
+            Download PDF
           </button>
           
           <button
             onClick={sendWhatsAppNotification}
-            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            className="inline-flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm w-full sm:w-auto"
           >
-            <PhoneIcon className="w-5 h-5 mr-2" />
+            <PhoneIcon className="w-4 h-4 mr-2" />
             Notifikasi Pelanggan
           </button>
         </div>
@@ -401,7 +450,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Status Pesanan:</label>
           <select
-            value={order.status}
+            value={order?.status || ''}
             onChange={(e) => updateOrderStatus(e.target.value)}
             className="w-full p-2 border rounded text-sm"
           >
@@ -414,7 +463,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Status Pembayaran:</label>
           <select
-            value={order.payment_status}
+            value={order?.payment_status || ''}
             onChange={(e) => updatePaymentStatus(e.target.value)}
             className="w-full p-2 border rounded text-sm"
           >
@@ -520,7 +569,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <div className="total-box bg-gray-50 p-6 rounded-lg">
               <div className="total-row flex justify-between items-center py-4 border-b border-gray-300">
                 <span className="total-label text-lg font-semibold text-gray-700">Total:</span>
-                <span className="total-amount text-xl font-bold text-orange-600">{formatCurrency(order.total_amount)}</span>
+                <span className="total-amount text-xl font-bold text-orange-600">{formatCurrency(order?.total_amount || 0)}</span>
               </div>
             </div>
           </div>
@@ -550,7 +599,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         <div className="flex justify-end items-end mt-12 qr-container">
           <div className="text-center">
             <QRCodeSVG 
-              value={`Order ID: ${order.id}-${order.status}-${order.payment_status}`} 
+              value={`Order ID: ${order?.id || 'N/A'}-${order?.status || 'N/A'}-${order?.payment_status || 'N/A'}`} 
               size={120} 
               includeMargin={true} 
               level="M" 

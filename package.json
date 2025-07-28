@@ -74,6 +74,8 @@
     "vaul": "^1.1.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.23.8"
+    ,
+    "html2pdf.js": "^0.10.1"
   },
   "devDependencies": {
     "@eslint/plugin-kit": "^0.3.3",
