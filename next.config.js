@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Note: `eslint` options in next.config.js are no longer supported
+  // See: https://nextjs.org/docs/messages/invalid-next-config
   images: { 
     unoptimized: false,
     remotePatterns: [
